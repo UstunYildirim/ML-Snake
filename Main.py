@@ -49,7 +49,7 @@ class Main():
     def createBrandNewSnakes(s,m,n,k):
         s.genNo = 0
         for i in range(k):
-            s.agents.append(Agent(Game(m,n,1),1,-20,20))
+            s.agents.append(Agent(Game(m,n,1),-20,20))
 
     def simHelper(s,a):
         return a.finishTheGame()
@@ -74,7 +74,8 @@ class Main():
         for i in range(s.numTopP):
             numCopies = int(topPerfs[i]/perfSum*numSpotsToBeFilled)
             newA = [deepcopy(s.agents[i]) for x in range(numCopies)]
-            [a.randomVariation() for a in newA]
+            for a in newA:
+                a.randomVariation(i/s.numTopP + 0.01)
             s.agents += newA
 
         i = 0
@@ -145,7 +146,7 @@ class Main():
         i = 0
         while len(s.agents) < s.numTopP: # this might happen if numTopP is increased externally
             a = deepcopy(s.agents[i])
-            a.randomVariation(i/numAgents+0.1)
+            a.randomVariation()
             s.agents.append(a)
             i += 1
         s.evolveAndMultiply()

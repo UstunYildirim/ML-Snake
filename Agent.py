@@ -50,7 +50,7 @@ class Agent():
         s.performanceEvaluated = totalScore
         return s.performanceEvaluated
 
-    def randomVariation(s, varMagnitude):
+    def randomVariation(s, varMagnitude=1):
         for layer in s.NNLayers:
             layer.randomVariation(varMagnitude)
 
