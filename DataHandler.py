@@ -28,30 +28,30 @@ def normTailCoords(game):
 
 def obstaclesNearHead(game):
     # Hardcoded for efficiency
-    (hi, hj) = game.snake[0]
+    hi, hj = game.snake[0]
     res = [
             (hi-1, hj  ), #up
             (hi  , hj+1), #right
             (hi+1, hj  ), #down
             (hi  , hj-1), #left
-            # (hi-2, hj  ),
-            # (hi  , hj+2),
-            # (hi+2, hj  ),
-            # (hi  , hj-2),
-            # (hi-1, hj-1),
-            # (hi-1, hj+1),
-            # (hi+1, hj+1),
-            # (hi+1, hj-1)
+            (hi-2, hj  ),
+            (hi  , hj+2),
+            (hi+2, hj  ),
+            (hi  , hj-2),
+            (hi-1, hj-1),
+            (hi-1, hj+1),
+            (hi+1, hj+1),
+            (hi+1, hj-1)
         ]
-    return list(map(lambda pr: isObstacle(game, pr), res))
+    return [(lambda ij: isObstacle(game, ij))(ij) for ij in res]
 
 def extractFeatures(game):
     fi, fj = game.foodCoords
     hi, hj = game.snake[0]
-    di,dj = game.snakeDir
-
-    res = [(fi-hi)/game.m,
-            (fj-hj)/game.n,
+    di, dj = game.snakeDir
+            
+    res = [(fi-hi),
+            (fj-hj),
             ] + obstaclesNearHead(game)
 
     return res

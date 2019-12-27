@@ -33,7 +33,7 @@ class Agent():
         s.performanceEvaluated = None
 
     def performanceEvaluation(s):
-        if s.performanceEvaluated != None:
+        if s.performanceEvaluated is not None:
             return s.performanceEvaluated
 
         baseNo = s.game.m+s.game.n
@@ -41,12 +41,12 @@ class Agent():
         # totalScore += np.sqrt(s.game.numTurns)
         # optimization based on the number of turns 
         # seems to be highly non-linear!
-        totalScore -= s.game.numTurns
+        totalScore += np.sqrt(s.game.numTurns)
         totalScore += baseNo * s.game.score
         totalScore -= baseNo * s.game.dead
         if s.game.won:
             totalScore += 20*baseNo * s.game.won
-            #totalScore -= 2*s.game.numTurns
+            totalScore -= 2*s.game.numTurns
         s.performanceEvaluated = totalScore
         return s.performanceEvaluated
 

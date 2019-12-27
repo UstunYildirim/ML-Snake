@@ -15,7 +15,7 @@ class Game ():
     left = (0,-1)
     right = (0,1)
 
-    def __init__(s,m,n,randSeed=None):
+    def __init__(s,m,n):
         """
         This is the main game class.
         It takes two inputs (m and n) and creates a game board.
@@ -35,8 +35,6 @@ class Game ():
         except:
             raise Exception("Board dimensions should be at least 5x5")
 
-        if randSeed is not None:
-            random.seed(randSeed)
         s.m = m # number of rows
         s.n = n # number of columns
         s.score = 0
