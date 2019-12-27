@@ -23,8 +23,7 @@ To continue from saved data with all-nighter mode enabled:
 To change parameters of a saved data:
     ./Main.py -CP trained/agents_20x40.dat 100 20
 To see the top performers game play:
-    ./Main.py -V trained/agents_20x40.dat
-    """
+    ./Main.py -V trained/agents_20x40.dat"""
 
 class Main():
 
