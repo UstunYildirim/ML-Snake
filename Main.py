@@ -6,6 +6,7 @@ from copy import deepcopy
 from heapq import nlargest
 from sys import argv
 from Visualize import Visualize
+from SinglePlayer import SinglePlayer
 
 # create S random snakes
 # make them play the game
@@ -23,7 +24,10 @@ To continue from saved data with all-nighter mode enabled:
 To change parameters of a saved data:
     ./Main.py -CP trained/agents_20x40.dat 100 20
 To see the top performers game play:
-    ./Main.py -V trained/agents_20x40.dat"""
+    ./Main.py -V trained/agents_20x40.dat
+To try single player mode
+    ./Main.py -SP 7 10"""
+
 
 class Main():
 
@@ -51,7 +55,7 @@ class Main():
 
     def createBrandNewSnakes(s,m,n,k):
         for i in range(k):
-            s.agents.append(Agent(Game(m,n,1),-20,20))
+            s.agents.append(Agent(Game(m,n,1),-1,1))
 
     def simHelper(s,a):
         return a.finishTheGame()
@@ -79,7 +83,7 @@ class Main():
             for i in range(numCopies):
                 newA.append(deepcopy(s.agents[i]))
             for a in newA:
-                a.randomVariation(5*i/numCopies + 0.01)
+                a.randomVariation(i/numCopies + 0.01)
             s.agents += newA
 
         i = 0
@@ -94,6 +98,7 @@ class Main():
         s.configFile = 'snake.conf'
         s.loadAndContFromFile = None
         s.visualizeFN = None
+        s.singlePlayer = False
         try:
             if len(argv) == 1:
                 raise Exception()
@@ -120,6 +125,11 @@ class Main():
                     continue
                 elif argv[i] == '-V':
                     s.visualizeFN = argv[i+1]
+                    return
+                elif argv[i] == '-SP':
+                    s.singlePlayer = True
+                    s.m = int(argv[i+1])
+                    s.n = int(argv[i+2])
                     return
                 else:
                     break
@@ -175,7 +185,10 @@ class Main():
 
     def simulationMain(s):
         try:
-            N = int(input("Enter the number of generations to simulate\n"))
+            if s.anMode:
+                N = 1
+            else:
+                N = int(input("Enter the number of generations to simulate\n"))
         except:
             N = 1
         while True:
@@ -208,6 +221,10 @@ class Main():
             s.loadAndContinue()
         elif s.visualizeFN is not None:
             s.visualize()
+            exit()
+        elif s.singlePlayer:
+            sp = SinglePlayer(s.m, s.n)
+            sp.Play()
             exit()
         else:
             s.newTrainingSession()

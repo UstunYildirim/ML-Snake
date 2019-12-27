@@ -6,9 +6,13 @@ from Game import *
 
 class Visualize():
 
-    def __init__(s, agent):
-        s.agent = agent
-        s.game = s.agent.game
+    def __init__(s, agent = None, game = None):
+        if agent is not None:
+            s.agent = agent
+            s.game = s.agent.game
+        else:
+            s.agent = None
+            s.game = game
         s.state = s.game.state
         s.playground = Game(s.game.m,s.game.n)
 
@@ -23,6 +27,10 @@ class Visualize():
             return Game.right
         raise Exception("Letter is not a move")
         
+    def goBackNLines(s, N):
+        termSize = os.get_terminal_size()
+        numTermCols = termSize.columns
+        print('\b'*numTermCols*N, end='')
 
     def playMovie(s):
         moves = [s.__letterToMoveConv__(l) for l in s.agent.seqMoves]
@@ -31,9 +39,7 @@ class Visualize():
         j = 0
         while i <= len(moves):
             if i > 0:
-                termSize = os.get_terminal_size()
-                numTermCols = termSize.columns
-                print('\b'*numTermCols*(s.game.m+2), end='')
+                s.goBackNLines(s.game.m+2)
             s.display(s.playground)
             print("Score: ", s.playground.score)
             print("Turns: ", s.playground.numTurns)
@@ -44,7 +50,7 @@ class Visualize():
                 q = sys.stdin.readline().strip()
                 if q == 'q':
                     return
-                print('\b'*numTermCols, end='')
+                s.goBackNLines(1)
 
 
             s.playground.snakeDir = moves[i]
@@ -100,9 +106,9 @@ class Visualize():
         re = np.vectorize(s.replaceEntry)
         charMatrix = re(game.state)
         charMatrix = s.betterSnakeBody(game, charMatrix)
-        charMatrix[game.snake[0]] = \
-                s.replaceEntry(charMatrix[game.snake[0]])
-                # 'o' would be simpler but
+        charMatrix[game.snake[0]] = 'o'
+                # s.replaceEntry(charMatrix[game.snake[0]])
+                # 'o' is simpler but
                 # this is more safe in case of change
         st = ["".join(r) for r in charMatrix]
         st = "\n".join(st)

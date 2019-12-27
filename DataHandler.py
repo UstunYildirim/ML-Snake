@@ -34,14 +34,14 @@ def obstaclesNearHead(game):
             (hi  , hj+1), #right
             (hi+1, hj  ), #down
             (hi  , hj-1), #left
-            (hi-2, hj  ),
-            (hi  , hj+2),
-            (hi+2, hj  ),
-            (hi  , hj-2),
-            (hi-1, hj-1),
-            (hi-1, hj+1),
-            (hi+1, hj+1),
-            (hi+1, hj-1)
+            # (hi-2, hj  ),
+            # (hi  , hj+2),
+            # (hi+2, hj  ),
+            # (hi  , hj-2),
+            # (hi-1, hj-1),
+            # (hi-1, hj+1),
+            # (hi+1, hj+1),
+            # (hi+1, hj-1)
         ]
     return list(map(lambda pr: isObstacle(game, pr), res))
 
