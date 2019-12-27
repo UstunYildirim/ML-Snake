@@ -5,6 +5,7 @@ from DataHandler import changeNumSnakesAndTopP
 from copy import deepcopy
 from heapq import nlargest
 from sys import argv
+from Visualize import Visualize
 
 # create S random snakes
 # make them play the game
@@ -14,13 +15,16 @@ from sys import argv
 
 man = """Example Usage:
 For new session based on default config file:
-    Main.py -N
+    ./Main.py -N
 For a new session with given config file:
-    Main.py -c snake.conf
+    ./Main.py -c snake.conf
 To continue from saved data with all-nighter mode enabled:
-    Main.py -l trained/agents_20x40.dat -an
+    ./Main.py -l trained/agents_20x40.dat -an
 To change parameters of a saved data:
-    Main.py -CP trained/agents_20x40.dat 100 20"""
+    ./Main.py -CP trained/agents_20x40.dat 100 20
+To see the top performers game play:
+    ./Main.py -V trained/agents_20x40.dat
+    """
 
 class Main():
 
@@ -89,6 +93,7 @@ class Main():
         s.anMode = False # all-nighter mode
         s.configFile = 'snake.conf'
         s.loadAndContFromFile = None
+        s.visualizeFN = None
         try:
             if len(argv) == 1:
                 raise Exception()
@@ -113,12 +118,22 @@ class Main():
                     exit() # we can generalize this condition but it is currently safer to quit
                     i += 4
                     continue
+                elif argv[i] == '-V':
+                    s.visualizeFN = argv[i+1]
+                    return
                 else:
                     break
         except Exception:
             print(man)
             exit()
 
+    def visualize(s):
+        d = readDataFromFile(s.visualizeFN)
+        agents = d['agents']
+        topAgent = agents[0]
+        v = Visualize(topAgent)
+
+        v.playMovie()
 
     def saveData(s):
         d = {}
@@ -188,8 +203,11 @@ class Main():
 
     def main(s,argv):
         s.readArgs(argv)
-        if s.loadAndContFromFile != None:
+        if s.loadAndContFromFile is not None:
             s.loadAndContinue()
+        elif s.visualizeFN is not None:
+            s.visualize()
+            exit()
         else:
             s.newTrainingSession()
         s.simulationMain()
