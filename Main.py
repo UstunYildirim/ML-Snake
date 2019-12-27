@@ -50,7 +50,6 @@ class Main():
         f.close()
 
     def createBrandNewSnakes(s,m,n,k):
-        s.genNo = 0
         for i in range(k):
             s.agents.append(Agent(Game(m,n,1),-20,20))
 
@@ -76,9 +75,11 @@ class Main():
         #NOT SUPER CLEAN
         for i in range(s.numTopP):
             numCopies = int(topPerfs[i]/perfSum*numSpotsToBeFilled)
-            newA = [deepcopy(s.agents[i]) for x in range(numCopies)]
+            newA = []
+            for i in range(numCopies):
+                newA.append(deepcopy(s.agents[i]))
             for a in newA:
-                a.randomVariation(i/s.numTopP + 0.01)
+                a.randomVariation(5*i/numCopies + 0.01)
             s.agents += newA
 
         i = 0
@@ -169,6 +170,7 @@ class Main():
         print("Creating a new training set based on " + s.configFile)
         s.readConfigFile(s.configFile)
         s.agents = []
+        s.genNo = 0
         s.createBrandNewSnakes(s.m,s.n,s.numS)
 
     def simulationMain(s):
