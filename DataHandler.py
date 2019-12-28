@@ -34,11 +34,15 @@ def obstaclesNearHead(game):
             (hi  , hj+1), #right
             (hi+1, hj  ), #down
             (hi  , hj-1), #left
-            (hi-2, hj  ),
+            (hi-2, hj  ), # 2-move away
             (hi  , hj+2),
             (hi+2, hj  ),
             (hi  , hj-2),
             (hi-1, hj-1),
+            (hi-1, hj+1),
+            (hi+1, hj+1),
+            (hi+1, hj-1),
+            (hi-3, hj  ), # 3-move away
             (hi-1, hj+1),
             (hi+1, hj+1),
             (hi+1, hj-1)
@@ -70,8 +74,19 @@ def readDataFromFile(fileName):
     f.close()
     return new_d
 
-def changeNumSnakesAndTopP(fileName, newNumS, newNumTopP):
+def changeNumSnakesAndTopP(fileName, newNumS, newNumTopP, newNumNewBorns, newNumGamesToAve):
     d = readDataFromFile(fileName)
-    d['numS'] = newNumS
-    d['numTopP'] = newNumTopP
+
+    if newNumS != '-':
+        d['numS'] = int(newNumS)
+
+    if newNumTopP != '-': 
+        d['numTopP'] = int(newNumTopP)
+
+    if newNumNewBorns != '-':
+        d['numNewBorns'] = int(newNumNewBorns)
+
+    if newNumGamesToAve != '-':
+        d['numGamesToAve'] = int(newNumGamesToAve)
+        
     writeDataToFile(d, fileName)

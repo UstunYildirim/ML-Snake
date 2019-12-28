@@ -25,9 +25,9 @@ class Game ():
         0 : empty space
         1 : wall
         2 : body of the snake
-        3 : head of the snake (unique)
-        4 : tail of the snake (unique)
-        5 : food
+        4 : head of the snake (unique)
+        8 : tail of the snake (unique)
+        16 : food
         """
         try:
             assert(m>4)

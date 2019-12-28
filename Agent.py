@@ -82,7 +82,7 @@ class Agent():
         s.game.timeStep()
 
     def finishTheGame(s):
-        noFoodLimit = int((s.game.m*s.game.n)/2)
+        noFoodLimit = int((s.game.m*s.game.n)/3)
         lastScore = 0 
         i = 0
         while not (s.game.dead or s.game.won):

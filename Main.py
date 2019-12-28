@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 import os, select, sys
 from Agent import *
 from DataHandler import changeNumSnakesAndTopP
@@ -15,18 +15,34 @@ from SinglePlayer import SinglePlayer
 # run a generation, return statistics and ask user if they want to continue
 
 man = """Example Usage:
-For new session based on default config file:
-    ./Main.py -N
-For a new session with given config file:
-    ./Main.py -c snake.conf
-To continue from saved data with all-nighter mode enabled:
-    ./Main.py -l trained/agents_20x40.dat -an
-To change parameters of a saved data:
-    ./Main.py -CP trained/agents_20x40.dat 100 20
-To see the top performers game play:
-    ./Main.py -V trained/agents_20x40.dat
 To try single player mode
-    ./Main.py -SP 7 10"""
+    python3 Main.py -SP 7 10
+
+To start new session based on default config file:
+    python3 Main.py -N
+
+To start a new session with given config file:
+    python3 Main.py -c snake.conf
+
+To continue from saved data with all-nighter mode enabled:
+    python3 Main.py -l trained/agents_20x40.dat -an
+
+To change parameters of a saved data:
+    python3 Main.py -CP trained/agents_20x40.dat 100 20 4 2
+    This will make the following change:
+        number_of_snakes: 100
+        number_of_top_performers: 20
+        number_of_new_borns: 4
+        number_of_games_to_average: 2
+
+To omit some of these changes use -:
+    python3 Main.py -CP trained/agents_20x40.dat - 20 - -
+
+To see the top performer's game play:
+    python3 Main.py -V trained/agents_20x40.dat
+
+To see the third top performer's game play:
+    python3 Main.py -V trained/agents_20x40.dat 3"""
 
 
 class Main():
@@ -133,7 +149,7 @@ class Main():
                     i += 1
                     continue
                 elif argv[i] == '-CP':
-                    changeNumSnakesAndTopP(argv[i+1], int(argv[i+2]), int(argv[i+3]))
+                    changeNumSnakesAndTopP(argv[i+1], argv[i+2], argv[i+3], argv[i+4], argv[i+5])
                     exit() # we can generalize this condition but it is currently safer to quit
                     i += 4
                     continue
