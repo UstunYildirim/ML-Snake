@@ -16,23 +16,24 @@ class NNLayer():
         if randomize:
             rng = valMax - valMin
             avg = 0.5*(valMax+valMin)
-            s.theta = np.matrix((np.random.rand(s.numInputs+1,s.numOutputs)*rng)-avg)
+            s.theta = (np.random.rand(s.numInputs,s.numOutputs)*rng)-avg
+            s.bias = np.random.rand()
         else:
-            s.theta = np.matrix(np.zeros((s.numInputs+1,s.numOutputs)))
-
-    def augInp(s, inp):
-        return np.concatenate((np.array([1]),inp))
+            s.theta = np.zeros((s.numInputs,s.numOutputs))
+            s.bias = 0
 
     def forwardPropogate(s, inp):
-        augInp = s.augInp(inp)
-        z = augInp * s.theta
+        z = np.dot(inp, s.theta)+s.bias
         return np.array(s.sigmoid(z)).flatten()
 
     def predict (s, inp):
         return s.forwardPropogate(inp)>=s.threshold
     
     def randomVariation(s, varMagnitude=1):
-        deltaTheta = (np.random.rand(s.numInputs+1,s.numOutputs)*2)-1
-        deltaTheta = np.matrix(deltaTheta*varMagnitude)
+        deltaTheta = (np.random.rand(s.numInputs,s.numOutputs)*2)-1
+        deltaTheta = deltaTheta*varMagnitude
+        deltaBias = np.random.rand()*2-1
+        deltaBias = deltaBias*varMagnitude
         s.theta += deltaTheta
+        s.bias += deltaBias
         
