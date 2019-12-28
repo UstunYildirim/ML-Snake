@@ -26,27 +26,15 @@ def normTailCoords(game):
     [x,y] = game.snake[-1]
     return np.array([x/game.m, y/game.n])
 
-def obstaclesNearHead(game):
-    # Hardcoded for efficiency
+def obstaclesNearHead(game, n=1): # be able to see n steps away
     hi, hj = game.snake[0]
-    res = [
-            (hi-1, hj  ), #up
-            (hi  , hj+1), #right
-            (hi+1, hj  ), #down
-            (hi  , hj-1), #left
-            (hi-2, hj  ), # 2-move away
-            (hi  , hj+2),
-            (hi+2, hj  ),
-            (hi  , hj-2),
-            (hi-1, hj-1),
-            (hi-1, hj+1),
-            (hi+1, hj+1),
-            (hi+1, hj-1),
-            (hi-3, hj  ), # 3-move away
-            (hi-1, hj+1),
-            (hi+1, hj+1),
-            (hi+1, hj-1)
-        ]
+    res = []
+    for s in range(1,n+1):
+        for i in range(s):
+            res.append((hi + i,     hj + (s - i)))
+            res.append((hi + (s-i), hj -  i))
+            res.append((hi - i, hj - (s - i)))
+            res.append((hi - (s-i), hj + i))
     return [(lambda ij: isObstacle(game, ij))(ij) for ij in res]
 
 def extractFeatures(game):
@@ -56,7 +44,7 @@ def extractFeatures(game):
             
     res = [(fi-hi),
             (fj-hj),
-            ] + obstaclesNearHead(game)
+            ] + obstaclesNearHead(game, 3)
 
     return res
 
