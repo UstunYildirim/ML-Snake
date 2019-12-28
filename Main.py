@@ -31,12 +31,12 @@ To try single player mode
 
 class Main():
 
-    def readConfigFile(s, fileName = 'snake.conf'):
+    def readConfigFile(s):
         s.numS = 100
         s.numTopP = 10
         s.m = 10
         s.n = 10
-        f = open(fileName, 'r')
+        f = open(s.configFile, 'r')
         for l in f:
             if not ':' in l:
                 continue
@@ -51,6 +51,10 @@ class Main():
                 s.numS = int(b)
             elif a == 'number_of_top_performers':
                 s.numTopP = int(b)
+            elif a == 'number_of_new_borns':
+                s.numNewBorns = int(b)
+            elif a == 'number_of_games_to_average':
+                s.numGamesToAve = int(b)
         f.close()
 
     def createBrandNewSnakes(s,m,n,k):
@@ -60,19 +64,29 @@ class Main():
     def simHelper(s,a):
         return a.finishTheGame()
 
+    def getPerformance(s, a):
+        p = 0
+        a.finishTheGame()
+        p += a.performanceEvaluation()
+        for i in range(s.numGamesToAve-1):
+            a.newGame(Game(s.m,s.n))
+            a.finishTheGame()
+            p += a.performanceEvaluation()
+        av = p/s.numGamesToAve
+        a.performanceEvaluated = av
+        return av
+
     def simulateGenerationAndPurge(s):
-        for a in s.agents:
-            a.finishTheGame() 
         s.agents = nlargest(s.numTopP,
                 s.agents,
-                key = lambda a: a.performanceEvaluation())
+                key = s.getPerformance)
 
     def evolveAndMultiply(s):
         topPerfs = [a.performanceEvaluation() for a in s.agents]
         for a in s.agents:
             a.newGame(Game(s.m,s.n))
 
-        s.createBrandNewSnakes(s.m,s.n,int(s.numTopP/2))
+        s.createBrandNewSnakes(s.m,s.n,s.numNewBorns)
 
         numSpotsToBeFilled = s.numS-len(s.agents)
         perfSum = np.sum(topPerfs)
@@ -151,6 +165,8 @@ class Main():
         d['n'] = s.n
         d['numS'] = s.numS
         d['numTopP'] = s.numTopP
+        d['numNewBorns'] = s.numNewBorns
+        d['numGamesToAve'] = s.numGamesToAve
         d['genNo'] = s.genNo
         d['agents'] = s.agents
         writeDataToFile(d,
@@ -165,6 +181,8 @@ class Main():
         s.n = d['n']
         s.numS = d['numS']
         s.numTopP = d['numTopP']
+        s.numNewBorns = d['numNewBorns']
+        s.numGamesToAve = d['numGamesToAve']
         s.genNo = d['genNo']
         s.agents = d['agents']
         numAgents = len(s.agents)
@@ -178,7 +196,7 @@ class Main():
 
     def newTrainingSession(s):
         print("Creating a new training set based on " + s.configFile)
-        s.readConfigFile(s.configFile)
+        s.readConfigFile()
         s.agents = []
         s.genNo = 0
         s.createBrandNewSnakes(s.m,s.n,s.numS)

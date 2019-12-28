@@ -6,12 +6,21 @@ class Agent():
     def __idn__(s, x):
         return x
 
+    #TODO: create AI_Architecture class
+    #      to allow creation and mixture
+    #      of different kinds of AI simultaneously
     def __init__(s, game, valMin = -1, valMax = 1): 
         s.performanceEvaluated = None
         s.game = game
         s.NNLayers = []
         s.NNLayers.append(
                 NNLayer(featureLength(game),
+                    5,
+                    valMin = valMin,
+                    valMax = valMax,
+                    sigmoid = sigmoid))
+        s.NNLayers.append(
+                NNLayer(5,
                     4,
                     valMin = valMin,
                     valMax = valMax,
@@ -36,17 +45,21 @@ class Agent():
         if s.performanceEvaluated is not None:
             return s.performanceEvaluated
 
-        baseNo = s.game.m+s.game.n
+        baseNo = s.game.m*s.game.n
         totalScore = 5*baseNo
         # totalScore += np.sqrt(s.game.numTurns)
         # optimization based on the number of turns 
         # seems to be highly non-linear!
-        totalScore += np.sqrt(s.game.numTurns)
+        totalScore -= np.sqrt(s.game.numTurns)
         totalScore += baseNo * s.game.score
-        totalScore -= baseNo * s.game.dead
-        if s.game.won:
-            totalScore += 20*baseNo * s.game.won
-            totalScore -= 2*s.game.numTurns
+        totalScore -= 1.5*baseNo * s.game.dead
+        totalScore += 20*baseNo * s.game.won
+
+        hi, hj = s.game.snake[0]
+        fi, fj = s.game.foodCoords
+        totalScore -= np.abs(fi-hi)
+        totalScore -= np.abs(fj-hj)
+
         s.performanceEvaluated = totalScore
         return s.performanceEvaluated
 
