@@ -139,6 +139,10 @@ class Main():
                     continue
                 elif argv[i] == '-V':
                     s.visualizeFN = argv[i+1]
+                    try:
+                        s.snakeNoToVis = int(argv[i+2]) - 1
+                    except:
+                        s.snakeNoToVis = 0
                     return
                 elif argv[i] == '-SP':
                     s.singlePlayer = True
@@ -154,7 +158,7 @@ class Main():
     def visualize(s):
         d = readDataFromFile(s.visualizeFN)
         agents = d['agents']
-        topAgent = agents[0]
+        topAgent = agents[s.snakeNoToVis]
         v = Visualize(topAgent)
 
         v.playMovie()
