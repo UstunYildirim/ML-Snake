@@ -4,11 +4,11 @@ def sigmoid(x):
     return 1/(1+np.exp(-x))
 
 def ReLU(x):
-    return np.maximum(x+1,0)
+    return np.maximum(x,0)
 
 class NNLayer():
 
-    def __init__(s, numInputs, numOutputs, randomize=True, threshold=0.5, valMin=-1, valMax=1, activation = np.tanh):
+    def __init__(s, numInputs, numOutputs, randomize=True, threshold=0.5, valMin=-1, valMax=1, activation = ReLU):
         s.numInputs = numInputs
         s.numOutputs = numOutputs
         s.threshold = threshold

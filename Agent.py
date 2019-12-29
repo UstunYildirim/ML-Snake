@@ -9,27 +9,23 @@ class Agent():
     #TODO: create AI_Architecture class
     #      to allow creation and mixture
     #      of different kinds of AI simultaneously
-    def __init__(s, game, valMin = -1, valMax = 1): 
+    def __init__(s, game, valMin = -0.01, valMax = 0.01): 
         s.performanceEvaluated = None
-        s.allScores = []
         s.game = game
         s.NNLayers = []
         s.NNLayers.append(
                 NNLayer(featureLength(game),
                     5,
                     valMin = valMin,
-                    valMax = valMax))
+                    valMax = valMax,
+                    activation = ReLU))
         s.NNLayers.append(
                 NNLayer(5,
                     4,
                     valMin = valMin,
                     valMax = valMax,
                     activation = s.__idn__))
-        # Here we are using the identity function as the activation.
-        # That's because in the last layer we only need to 
-        # know which neuron fired the most intensely.
-        # This can be checked without applying a 
-        # strictly increasing function first
+
         s.seqMoves = ''
         s.foodCoords = [s.game.foodCoords]
 
@@ -61,7 +57,7 @@ class Agent():
         s.performanceEvaluated = totalScore
         return s.performanceEvaluated
 
-    def randomVariation(s, varMagnitude=1):
+    def randomVariation(s, varMagnitude=0.01):
         for layer in s.NNLayers:
             layer.randomVariation(varMagnitude)
 
@@ -96,11 +92,8 @@ class Agent():
         return s
 
     def printAgentInfo(s):
-        print('Moves: ', s.seqMoves)
-        print('FoodCoords: ', s.foodCoords)
         print('Num Turns: ', s.game.numTurns)
         print('Score: ', s.game.score)
         print('Dead: ', s.game.dead)
         print('Won: ', s.game.won)
-        print('All scores: ', s.allScores)
         print('Performance evaluation: ', s.performanceEvaluation())

@@ -44,7 +44,7 @@ def extractFeatures(game):
             
     res = [(fi-hi),
             (fj-hj),
-            ] + obstaclesNearHead(game, 3)
+            ] + obstaclesNearHead(game, 2)
 
     return res
 

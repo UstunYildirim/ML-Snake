@@ -82,12 +82,10 @@ class Main():
         p = 0
         a.finishTheGame()
         p += a.performanceEvaluation()
-        a.allScores.append(a.performanceEvaluation())
         for i in range(s.numGamesToAve-1):
             a.newGame(Game(s.m,s.n))
             a.finishTheGame()
             p += a.performanceEvaluation()
-            a.allScores.append(a.performanceEvaluation())
         av = p/s.numGamesToAve
         a.performanceEvaluated = av
         return av
@@ -243,7 +241,7 @@ class Main():
         while True:
             s.genNo += 1
             s.simulateGenerationAndPurge()
-            print('\n\n Top Scores of Gen ', s.genNo, ': ', [a.performanceEvaluation() for a in s.agents[0:s.numTopP]], '\n')
+            print('\nTop Scores of Gen ', s.genNo, ': ', [a.performanceEvaluation() for a in s.agents[0:s.numTopP]])
             N -= 1
             if N == 0:
                 try:
@@ -257,7 +255,7 @@ class Main():
                 except:
                     N = -1
                 if N == -1:
-                    print("\n\nTop Agents of Gen ", s.genNo, ":\n\n")
+                    print("\nTop Agents of Gen ", s.genNo, ":")
                     for a in s.agents[0:s.numTopP]:
                         a.printAgentInfo()
                     s.saveData()
