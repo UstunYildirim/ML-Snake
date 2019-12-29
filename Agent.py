@@ -11,27 +11,25 @@ class Agent():
     #      of different kinds of AI simultaneously
     def __init__(s, game, valMin = -1, valMax = 1): 
         s.performanceEvaluated = None
+        s.allScores = []
         s.game = game
         s.NNLayers = []
         s.NNLayers.append(
                 NNLayer(featureLength(game),
                     5,
                     valMin = valMin,
-                    valMax = valMax,
-                    sigmoid = sigmoid))
+                    valMax = valMax))
         s.NNLayers.append(
                 NNLayer(5,
                     4,
                     valMin = valMin,
                     valMax = valMax,
-                    sigmoid = s.__idn__))
-        # Here we are using the identity function as the sigmoid.
-        # That's because we only use a single layer NN
-        # without gradient descent and see which one
-        # of the neurons fire most intensely to determine
-        # the next direction. Since sigmoid is a strictly 
-        # increasing function, we can check intensities before
-        # we apply sigmoid anyway.
+                    activation = s.__idn__))
+        # Here we are using the identity function as the activation.
+        # That's because in the last layer we only need to 
+        # know which neuron fired the most intensely.
+        # This can be checked without applying a 
+        # strictly increasing function first
         s.seqMoves = ''
         s.foodCoords = [s.game.foodCoords]
 
@@ -104,4 +102,5 @@ class Agent():
         print('Score: ', s.game.score)
         print('Dead: ', s.game.dead)
         print('Won: ', s.game.won)
+        print('All scores: ', s.allScores)
         print('Performance evaluation: ', s.performanceEvaluation())

@@ -77,17 +77,17 @@ class Main():
         for i in range(k):
             s.agents.append(Agent(Game(m,n)))
 
-    def simHelper(s,a):
-        return a.finishTheGame()
 
     def getPerformance(s, a):
         p = 0
         a.finishTheGame()
         p += a.performanceEvaluation()
+        a.allScores.append(a.performanceEvaluation())
         for i in range(s.numGamesToAve-1):
             a.newGame(Game(s.m,s.n))
             a.finishTheGame()
             p += a.performanceEvaluation()
+            a.allScores.append(a.performanceEvaluation())
         av = p/s.numGamesToAve
         a.performanceEvaluated = av
         return av
@@ -129,6 +129,9 @@ class Main():
         s.loadAndContFromFile = None
         s.visualizeFN = None
         s.singlePlayer = False
+        s.visNewGame = False 
+        s.snakeNoToVis = 0
+
         try:
             if len(argv) == 1:
                 raise Exception()
@@ -155,10 +158,15 @@ class Main():
                     continue
                 elif argv[i] == '-V':
                     s.visualizeFN = argv[i+1]
-                    try:
+                    if i+4 == len(argv): # both the rank and 'R' option are given
                         s.snakeNoToVis = int(argv[i+2]) - 1
-                    except:
-                        s.snakeNoToVis = 0
+                        if argv[i+3] == 'R':
+                            s.visNewGame = True #TODO
+                    if i+3 == len(argv):
+                        if argv[i+2] == 'R':
+                            s.visNewGame = True
+                        else:
+                            s.snakeNoToVis = int(argv[i+2]) - 1
                     return
                 elif argv[i] == '-SP':
                     s.singlePlayer = True
@@ -176,8 +184,11 @@ class Main():
         agents = d['agents']
         topAgent = agents[s.snakeNoToVis]
         v = Visualize(topAgent)
-
-        v.playMovie()
+        
+        if s.visNewGame:
+            pass
+        else:
+            v.playMovie()
 
     def saveData(s):
         d = {}

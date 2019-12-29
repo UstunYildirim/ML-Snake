@@ -8,11 +8,11 @@ def ReLU(x):
 
 class NNLayer():
 
-    def __init__(s, numInputs, numOutputs, randomize=True, threshold=0.5, valMin=-1, valMax=1, sigmoid = sigmoid):
+    def __init__(s, numInputs, numOutputs, randomize=True, threshold=0.5, valMin=-1, valMax=1, activation = np.tanh):
         s.numInputs = numInputs
         s.numOutputs = numOutputs
         s.threshold = threshold
-        s.sigmoid = sigmoid
+        s.activation = activation
         if randomize:
             rng = valMax - valMin
             avg = 0.5*(valMax+valMin)
@@ -24,7 +24,7 @@ class NNLayer():
 
     def forwardPropogate(s, inp):
         z = np.dot(inp, s.theta)+s.bias
-        return np.array(s.sigmoid(z)).flatten()
+        return np.array(s.activation(z)).flatten()
 
     def predict (s, inp):
         return s.forwardPropogate(inp)>=s.threshold
