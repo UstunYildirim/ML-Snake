@@ -15,18 +15,12 @@ class Agent():
         s.NNLayers = []
         s.NNLayers.append(
                 NNLayer(featureLength(game),
-                    5,
+                    6,
                     mu = 0,
                     sigma  = 0.3,
                     activation = np.tanh))
         s.NNLayers.append(
-                NNLayer(5,
-                    5,
-                    mu = 0,
-                    sigma  = 0.3,
-                    activation = np.tanh))
-        s.NNLayers.append(
-                NNLayer(5,
+                NNLayer(6,
                     4,
                     mu = 0,
                     sigma  = 0.3,
