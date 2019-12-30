@@ -42,14 +42,16 @@ def obstaclesNearHead(game, n=1, obsType = None): # be able to see n steps away
 def extractFeatures(game):
     fi, fj = game.foodCoords
     hi, hj = game.snake[0]
-    di, dj = game.snakeDir
-            
-    res = [(fi-hi),
-            (fj-hj),
-            ] + obstaclesNearHead(game, 2, Game.wall) \
-                + obstaclesNearHead(game, 2, Game.body)
 
-    return np.array(res).flatten()
+    res = game.state.flatten() == Game.body
+    res2 = [hi, hj, fi, fj]
+
+    # res = [(fi-hi),
+    #         (fj-hj),
+    #         ] + obstaclesNearHead(game, 2, Game.wall) \
+    #             + obstaclesNearHead(game, 2, Game.body)
+
+    return np.concatenate((res,res2))
 
 def featureLength(game):
     return len(extractFeatures(game))
