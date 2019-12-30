@@ -21,6 +21,12 @@ class Agent():
                     activation = np.tanh))
         s.NNLayers.append(
                 NNLayer(5,
+                    5,
+                    mu = 0,
+                    sigma  = 0.01,
+                    activation = np.tanh))
+        s.NNLayers.append(
+                NNLayer(5,
                     4,
                     mu = 0,
                     sigma  = 0.01,
@@ -41,18 +47,16 @@ class Agent():
 
         baseNo = s.game.m*s.game.n
         totalScore = 5*baseNo
-        # totalScore += np.sqrt(s.game.numTurns)
-        # optimization based on the number of turns 
-        # seems to be highly non-linear!
+
         totalScore -= np.sqrt(s.game.numTurns)
         totalScore += baseNo * s.game.score
         totalScore -= 1.5*baseNo * s.game.dead
         totalScore += 20*baseNo * s.game.won
 
-        hi, hj = s.game.snake[0]
-        fi, fj = s.game.foodCoords
-        totalScore -= np.abs(fi-hi)
-        totalScore -= np.abs(fj-hj)
+        # hi, hj = s.game.snake[0]
+        # fi, fj = s.game.foodCoords
+        # totalScore -= np.abs(fi-hi)
+        # totalScore -= np.abs(fj-hj)
 
         s.performanceEvaluated = totalScore
         return s.performanceEvaluated

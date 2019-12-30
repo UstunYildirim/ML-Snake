@@ -3,13 +3,15 @@ import numpy as np
 import math
 from Game import *
 
-def isObstacle(game, pr):
+def isObstacle(game, pr, obstacleType = None):
     # Hardcoded for efficiency
     # if entry == Game.wall \
     # or entry == Game.body:
     (i,j) = pr
     if i < 0 or i >= game.m or j < 0 or j >= game.n:
         return 1
+    if obstacleType is not None:
+        return 1 if game.state[i,j] == obstacleType else 0
     if game.state[i,j] & 3:
         return 1
     return 0
@@ -26,7 +28,7 @@ def normTailCoords(game):
     [x,y] = game.snake[-1]
     return np.array([x/game.m, y/game.n])
 
-def obstaclesNearHead(game, n=1): # be able to see n steps away
+def obstaclesNearHead(game, n=1, obsType = None): # be able to see n steps away
     hi, hj = game.snake[0]
     res = []
     for s in range(1,n+1):
@@ -35,7 +37,7 @@ def obstaclesNearHead(game, n=1): # be able to see n steps away
             res.append((hi + (s-i), hj -  i))
             res.append((hi - i, hj - (s - i)))
             res.append((hi - (s-i), hj + i))
-    return [(lambda ij: isObstacle(game, ij))(ij) for ij in res]
+    return [(lambda ij: isObstacle(game, ij, obsType))(ij) for ij in res]
 
 def extractFeatures(game):
     fi, fj = game.foodCoords
@@ -44,7 +46,8 @@ def extractFeatures(game):
             
     res = [(fi-hi),
             (fj-hj),
-            ] + obstaclesNearHead(game, 2)
+            ] + obstaclesNearHead(game, 2, Game.wall) \
+                + obstaclesNearHead(game, 2, Game.body)
 
     return np.array(res).flatten()
 
