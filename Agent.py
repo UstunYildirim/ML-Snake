@@ -17,19 +17,19 @@ class Agent():
                 NNLayer(featureLength(game),
                     5,
                     mu = 0,
-                    sigma  = 0.01,
+                    sigma  = 0.1,
                     activation = np.tanh))
         s.NNLayers.append(
                 NNLayer(5,
                     5,
                     mu = 0,
-                    sigma  = 0.01,
+                    sigma  = 0.1,
                     activation = np.tanh))
         s.NNLayers.append(
                 NNLayer(5,
                     4,
                     mu = 0,
-                    sigma  = 0.01,
+                    sigma  = 0.1,
                     activation = s.__idn__))
 
         s.seqMoves = ''
@@ -61,7 +61,7 @@ class Agent():
         s.performanceEvaluated = totalScore
         return s.performanceEvaluated
 
-    def randomVariation(s, varMagnitude=0.01):
+    def randomVariation(s, varMagnitude=0.1):
         for layer in s.NNLayers:
             layer.randomVariation(varMagnitude)
 
