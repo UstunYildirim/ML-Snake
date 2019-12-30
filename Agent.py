@@ -30,12 +30,6 @@ class Agent():
                     4,
                     mu = 0,
                     sigma  = 0.3,
-                    activation = np.tanh))
-        s.NNLayers.append(
-                NNLayer(4,
-                    4,
-                    mu = 0,
-                    sigma  = 0.3,
                     activation = s.__idn__))
 
         s.seqMoves = ''
