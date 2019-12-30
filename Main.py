@@ -123,6 +123,7 @@ class Main():
     
     def readArgs(s, argv):
         s.anMode = False # all-nighter mode
+        s.anAutoSave = 0
         s.configFile = 'snake.conf'
         s.loadAndContFromFile = None
         s.visualizeFN = None
@@ -147,6 +148,11 @@ class Main():
                     continue
                 elif argv[i] == '-an': # all-nighter mode
                     s.anMode = True
+                    i += 1
+                    continue
+                elif argv[i] == '-an+': # all-nighter mode with auto-save
+                    s.anMode = True
+                    s.anAutoSave = 40
                     i += 1
                     continue
                 elif argv[i] == '-CP':
@@ -243,6 +249,10 @@ class Main():
             s.simulateGenerationAndPurge()
             print('\nTop Scores of Gen ', s.genNo, ': ', [a.performanceEvaluation() for a in s.agents[0:s.numTopP]])
             N -= 1
+            if s.anAutoSave != 0:
+                if s.genNo % s.anAutoSave == 0:
+                    s.saveData()
+                    print("All data saved")
             if N == 0:
                 try:
                     if s.anMode:
