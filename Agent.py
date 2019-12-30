@@ -18,19 +18,19 @@ class Agent():
                     6,
                     mu = 0,
                     sigma  = 0.1,
-                    activation = ReLU))
+                    activation = np.tanh))
         s.NNLayers.append(
                 NNLayer(6,
                     5,
                     mu = 0,
                     sigma  = 0.1,
-                    activation = ReLU))
+                    activation = np.tanh))
         s.NNLayers.append(
                 NNLayer(5,
                     4,
                     mu = 0,
                     sigma  = 0.1,
-                    activation = ReLU))
+                    activation = np.tanh))
         s.NNLayers.append(
                 NNLayer(4,
                     4,

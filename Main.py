@@ -21,6 +21,9 @@ To try single player mode
 To start new session based on default config file:
     python3 Main.py -N
 
+To start new session with all-nighter mode and autosaving:
+    python3 Main.py -an+ -N
+
 To start a new session with given config file:
     python3 Main.py -c snake.conf
 
