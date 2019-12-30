@@ -53,10 +53,10 @@ class Agent():
         totalScore -= 1.5*baseNo * s.game.dead
         totalScore += 20*baseNo * s.game.won
 
-        # hi, hj = s.game.snake[0]
-        # fi, fj = s.game.foodCoords
-        # totalScore -= np.abs(fi-hi)
-        # totalScore -= np.abs(fj-hj)
+        hi, hj = s.game.snake[0]
+        fi, fj = s.game.foodCoords
+        totalScore -= np.abs(fi-hi)
+        totalScore -= np.abs(fj-hj)
 
         s.performanceEvaluated = totalScore
         return s.performanceEvaluated
