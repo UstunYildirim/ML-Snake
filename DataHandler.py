@@ -46,7 +46,7 @@ def extractFeatures(game):
             (fj-hj),
             ] + obstaclesNearHead(game, 2)
 
-    return res
+    return np.array(res).flatten()
 
 def featureLength(game):
     return len(extractFeatures(game))

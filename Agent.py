@@ -9,21 +9,21 @@ class Agent():
     #TODO: create AI_Architecture class
     #      to allow creation and mixture
     #      of different kinds of AI simultaneously
-    def __init__(s, game, valMin = -0.01, valMax = 0.01): 
+    def __init__(s, game): 
         s.performanceEvaluated = None
         s.game = game
         s.NNLayers = []
         s.NNLayers.append(
                 NNLayer(featureLength(game),
                     5,
-                    valMin = valMin,
-                    valMax = valMax,
-                    activation = ReLU))
+                    mu = 0,
+                    sigma  = 0.01,
+                    activation = np.tanh))
         s.NNLayers.append(
                 NNLayer(5,
                     4,
-                    valMin = valMin,
-                    valMax = valMax,
+                    mu = 0,
+                    sigma  = 0.01,
                     activation = s.__idn__))
 
         s.seqMoves = ''
