@@ -4,15 +4,13 @@ import math
 from Game import *
 
 def isObstacle(game, pr, obstacleType = None):
-    # Hardcoded for efficiency
-    # if entry == Game.wall \
-    # or entry == Game.body:
     (i,j) = pr
     if i < 0 or i >= game.m or j < 0 or j >= game.n:
         return 1
     if obstacleType is not None:
         return 1 if game.state[i,j] == obstacleType else 0
-    if game.state[i,j] & 3:
+    obs = (Game.wall | Game.body)
+    if game.state[i,j] & obs:
         return 1
     return 0
 
@@ -40,18 +38,19 @@ def obstaclesNearHead(game, n=1, obsType = None): # be able to see n steps away
     return [(lambda ij: isObstacle(game, ij, obsType))(ij) for ij in res]
 
 def extractFeatures(game):
-    fi, fj = game.foodCoords
-    hi, hj = game.snake[0]
+    return game.state.flatten()/Game.boardRange
+    # fi, fj = game.foodCoords
+    # hi, hj = game.snake[0]
 
-    res = game.state.flatten() == Game.body
-    res2 = [hi, hj, fi, fj]
+    # res = game.state.flatten() == Game.body
+    # res2 = [hi, hj, fi, fj]
 
-    # res = [(fi-hi),
-    #         (fj-hj),
-    #         ] + obstaclesNearHead(game, 2, Game.wall) \
-    #             + obstaclesNearHead(game, 2, Game.body)
+    # # res = [(fi-hi),
+    # #         (fj-hj),
+    # #         ] + obstaclesNearHead(game, 2, Game.wall) \
+    # #             + obstaclesNearHead(game, 2, Game.body)
 
-    return np.concatenate((res,res2))
+    # return np.concatenate((res,res2))
 
 def featureLength(game):
     return len(extractFeatures(game))

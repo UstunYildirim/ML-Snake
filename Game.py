@@ -3,12 +3,13 @@ import random
 import math
 
 class Game ():
-    empty = 0
-    wall = 1
-    body = 2
-    head = 4
-    tail = 8
-    food = 16
+    wall = -3
+    body = -2
+    tail = -1
+    empty = 0 # keep this at 0
+    head = 1
+    food = 3
+    boardRange = 3
 
     up = (-1,0)
     down = (1,0)
@@ -22,12 +23,12 @@ class Game ():
         m and n both have to be at least 5.
 
         state is a matrix representing the game.
-        0 : empty space
-        1 : wall
-        2 : body of the snake
-        4 : head of the snake (unique)
-        8 : tail of the snake (unique)
-        16 : food
+        Game.empty : empty space
+        Game.wall : wall
+        Game.body : body of the snake
+        Game.head : head of the snake (unique)
+        Game.tail : tail of the snake (unique)
+        Game.food : food
         """
         try:
             assert(m>4)
