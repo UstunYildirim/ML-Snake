@@ -45,7 +45,6 @@ class Main():
     changeParamsMode  = 5
     hyperParamOptMode = 6
 
-
     def readArgs(s, argv):
         try:
             if len(argv) == 1:
@@ -68,14 +67,19 @@ class Main():
             else:
                 raise Exception()
         except Exception:
-            print(man)
-            exit()
+            s.invalidArguments()
+
+    def invalidArguments(s):
+        print(man)
+        exit()
 
     def main(s,argv):
         controlHandler = ControlHandler(argv)
         s.readArgs(argv)
         if s.mode == Main.singPlayerMode:
             controlHandler.singlePlayer()
+        elif s.mode == Main.newTrSessMode:
+            controlHandler.newTrainingSession()
 
         
 
