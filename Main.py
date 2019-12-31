@@ -1,5 +1,6 @@
 #! /usr/bin/python3
 import os, sys
+from ControlHandler import *
 
 man = """Example Usage:
 To try single player mode on a 7 by 10 board
@@ -50,8 +51,8 @@ class Main():
             if len(argv) == 1:
                 raise Exception()
             elif argv[1] == '-h' or \
-                    argv[1] == '--help':
-                        raise Exception()
+                argv[1] == '--help':
+                    raise Exception()
             elif argv[1] == '-SP':
                 s.mode = Main.singPlayerMode
             elif argv[1] == '-N':
@@ -71,8 +72,13 @@ class Main():
             exit()
 
     def main(s,argv):
+        controlHandler = ControlHandler(argv)
         s.readArgs(argv)
+        if s.mode == Main.singPlayerMode:
+            controlHandler.singlePlayer()
+
         
 
 if __name__ == '__main__':
     Main().main(sys.argv)
+
