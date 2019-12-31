@@ -66,7 +66,7 @@ def readDataFromFile(fileName):
     f.close()
     return new_d
 
-def changeNumSnakesAndTopP(fileName, newNumS, newNumTopP, newNumNewBorns, newNumGamesToAve):
+def changeNumSnakesAndTopP(fileName, newNumS, newNumTopP, newNumNewB, newNumGamesToAve):
     d = readDataFromFile(fileName)
 
     if newNumS != '-':
@@ -75,8 +75,8 @@ def changeNumSnakesAndTopP(fileName, newNumS, newNumTopP, newNumNewBorns, newNum
     if newNumTopP != '-': 
         d['numTopP'] = int(newNumTopP)
 
-    if newNumNewBorns != '-':
-        d['numNewBorns'] = int(newNumNewBorns)
+    if newNumNewB != '-':
+        d['numNewB'] = int(newNumNewB)
 
     if newNumGamesToAve != '-':
         d['numGamesToAve'] = int(newNumGamesToAve)
