@@ -6,9 +6,12 @@ def sigmoid(x):
 def ReLU(x):
     return np.maximum(x,0)
 
+def identity(x):
+    return x
+
 class NNLayer():
 
-    def __init__(s, numInputs, numOutputs, randomize=True, threshold=0.5, mu=0, sigma=1, activation = ReLU):
+    def __init__(s, numInputs, numOutputs, randomize=True, threshold=0.5, mu=0, sigma=1, activation = sigmoid):
         s.numInputs = numInputs
         s.numOutputs = numOutputs
         s.threshold = threshold

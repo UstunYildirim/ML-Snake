@@ -3,29 +3,21 @@ from DataHandler import *
 
 class Agent():
 
-    def __idn__(s, x):
-        return x
-
     #TODO: create AI_Architecture class
     #      to allow creation and mixture
     #      of different kinds of AI simultaneously
-    def __init__(s, game): 
+    def __init__(s, game, NNStructure): 
         s.performanceEvaluated = None
         s.game = game
         s.NNLayers = []
-        s.NNLayers.append(
-                NNLayer(featureLength(game),
-                    6,
-                    mu = 0,
-                    sigma  = 0.3,
-                    activation = np.tanh))
-        s.NNLayers.append(
-                NNLayer(6,
-                    4,
-                    mu = 0,
-                    sigma  = 0.3,
-                    activation = s.__idn__))
-
+        NNStructure = [(featureLength(game),None)] + NNStructure + [(4,identity)]
+        for i in range(1,len(NNStructure)):
+            s.NNLayers.append(
+                    NNLayer(NNStructure[i-1][0],
+                        NNStructure[i][0],
+                        mu = 0,
+                        sigma = 0.3,
+                        activation = NNStructure[i][1]))
         s.seqMoves = ''
         s.foodCoords = [s.game.foodCoords]
 

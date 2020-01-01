@@ -1,4 +1,4 @@
-
+from Agent import *
 
 class TrainingSession():
 
@@ -9,11 +9,16 @@ class TrainingSession():
         s.numTopP = params['numTopP']
         s.numNewB = params['numNewB']
         s.numGamesToAve = params['numGamesToAve']
+        s.NNString = params['NNString']
         s.NNStructure = params['NNStructure']
         s.genNo = 0
-        s.agents = []
-        #TODO: create agents
+        s.agents = s.createNewAgents(s.m,s.n,s.numS,s.NNStructure)
 
+    def createNewAgents(s,m,n,k,NNStr):
+        newAgents = []
+        for i in range(k):
+            newAgents.append(Agent(Game(m,n), NNStr))
+        return newAgents
 
     def loadSession(s, params):
         s.m = params['m']
@@ -26,16 +31,11 @@ class TrainingSession():
         s.genNo = params['genNo']
         s.agents = params['agents']
 
-    def saveSession(s):
+    def saveSession(s, folder = 'trained', fileNamePrefix = 'agents_'):
         pass
 
     def trainingSessionMain(s):
         pass
-
-    def createBrandNewSnakes(s,m,n,k):
-        for i in range(k):
-            s.agents.append(Agent(Game(m,n)))
-
 
     def getPerformance(s, a):
         p = 0
@@ -114,46 +114,3 @@ class TrainingSession():
             s.agents.append(a)
             i += 1
         s.evolveAndMultiply()
-
-    def newTrainingSession(s):
-        print("Creating a new training set based on " + s.configFile)
-        s.readConfigFile()
-        s.agents = []
-        s.genNo = 0
-        s.createBrandNewSnakes(s.m,s.n,s.numS)
-
-    def simulationMain(s):
-        try:
-            if s.anMode:
-                N = 1
-            else:
-                N = int(input("Enter the number of generations to simulate\n"))
-        except:
-            N = 1
-        while True:
-            s.genNo += 1
-            s.simulateGenerationAndPurge()
-            print('\nTop Scores of Gen ', s.genNo, ': ', [a.performanceEvaluation() for a in s.agents[0:s.numTopP]])
-            N -= 1
-            if s.anAutoSave != 0:
-                if s.genNo % s.anAutoSave == 0:
-                    s.saveData()
-                    print("All data saved")
-            if N == 0:
-                try:
-                    if s.anMode:
-                        N = 1
-                        inp, out, exc = select.select([sys.stdin],[],[], 0.001)
-                        if inp:
-                            N = int(sys.stdin.readline().strip())
-                    else:
-                        N = int(input("How many generation to simulate?\n"))
-                except:
-                    N = -1
-                if N == -1:
-                    print("\nTop Agents of Gen ", s.genNo, ":")
-                    for a in s.agents[0:s.numTopP]:
-                        a.printAgentInfo()
-                    s.saveData()
-                    exit()
-            s.evolveAndMultiply()

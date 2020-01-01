@@ -55,17 +55,6 @@ def extractFeatures(game):
 def featureLength(game):
     return len(extractFeatures(game))
 
-def writeDataToFile(data, fileName):
-    f = open(fileName, 'wb')
-    pickle.dump(data, f)
-    f.close()
-
-def readDataFromFile(fileName):
-    f = open(fileName, 'rb')
-    new_d = pickle.load(f)
-    f.close()
-    return new_d
-
 def changeNumSnakesAndTopP(fileName, newNumS, newNumTopP, newNumNewB, newNumGamesToAve):
     d = readDataFromFile(fileName)
 
