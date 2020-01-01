@@ -2,7 +2,6 @@
 
 class TrainingSession():
 
-
     def newSession(s, params):
         s.m = params['m']
         s.n = params['n']
@@ -11,8 +10,9 @@ class TrainingSession():
         s.numNewB = params['numNewB']
         s.numGamesToAve = params['numGamesToAve']
         s.NNStructure = params['NNStructure']
-        s.genNo = params['genNo']
-        s.agents = params['agents']
+        s.genNo = 0
+        s.agents = []
+        #TODO: create agents
 
 
     def loadSession(s, params):
