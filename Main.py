@@ -80,6 +80,8 @@ class Main():
             controlHandler.singlePlayer()
         elif s.mode == Main.newTrSessMode:
             controlHandler.newTrainingSession()
+        elif s.mode == Main.contTrSessMode:
+            controlHandler.contTrainingSession()
 
         
 

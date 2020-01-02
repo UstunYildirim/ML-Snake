@@ -20,22 +20,8 @@ class TrainingSession():
             newAgents.append(Agent(Game(m,n), NNStr))
         return newAgents
 
-    def loadSession(s, params):
-        s.m = params['m']
-        s.n = params['n']
-        s.numS = params['numS']
-        s.numTopP = params['numTopP']
-        s.numNewB = params['numNewB']
-        s.numGamesToAve = params['numGamesToAve']
-        s.NNStructure = params['NNStructure']
-        s.genNo = params['genNo']
-        s.agents = params['agents']
-
-    def saveSession(s, folder = 'trained', fileNamePrefix = 'agents_'):
-        pass
-
-    def trainingSessionMain(s):
-        pass
+    def simulateOneGeneration(s):
+        s.genNo += 1
 
     def getPerformance(s, a):
         p = 0
@@ -80,37 +66,3 @@ class TrainingSession():
             s.agents.append(a)
             i = (i+1)%s.numTopP
 
-    def saveData(s):
-        d = {}
-        d['m'] = s.m
-        d['n'] = s.n
-        d['numS'] = s.numS
-        d['numTopP'] = s.numTopP
-        d['numNewB'] = s.numNewB
-        d['numGamesToAve'] = s.numGamesToAve
-        d['genNo'] = s.genNo
-        d['agents'] = s.agents
-        writeDataToFile(d,
-                'trained/agents_' +\
-                str(s.m) +\
-                'x' + str(s.n) +\
-                '.dat')
-
-    def loadAndContinue(s):
-        d = readDataFromFile(s.loadAndContFromFile)
-        s.m = d['m']
-        s.n = d['n']
-        s.numS = d['numS']
-        s.numTopP = d['numTopP']
-        s.numNewB= d['numNewB']
-        s.numGamesToAve = d['numGamesToAve']
-        s.genNo = d['genNo']
-        s.agents = d['agents']
-        numAgents = len(s.agents)
-        i = 0
-        while len(s.agents) < s.numTopP: # this might happen if numTopP is increased externally
-            a = deepcopy(s.agents[i])
-            a.randomVariation()
-            s.agents.append(a)
-            i += 1
-        s.evolveAndMultiply()

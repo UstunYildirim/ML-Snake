@@ -1,5 +1,5 @@
 import numpy as np
-import select, pickle
+import sys, select, pickle
 from NNLayer import ReLU, sigmoid, identity
 from copy import deepcopy
 from heapq import nlargest
@@ -21,11 +21,12 @@ class ControlHandler():
         sp = SinglePlayer(m,n)
         sp.Play()
 
-    def handleNewTrSessArgs(s):
+    def handleTrSessArgs(s):
         argv = s.argv
         s.anMode = False
         s.autoSaveEnabled = False
         s.configFile = 'snake.conf'
+        s.trSessFilePath = ''
         i = 2 
         while i < len(argv):
             if argv[i] == '-c':
@@ -41,15 +42,29 @@ class ControlHandler():
                 s.anMode = True
                 s.autoSaveEnabled = True
                 s.autoSaveFreq = int(argv[i][4:])
+            elif s.trSessFilePath == '':
+                s.trSessFilePath = argv[i]
             else:
                 raise Exception("Invalid arguments")
             i += 1
+
         s.configParams = s.getConfigParams()
+        configParams = s.configParams
+        if s.trSessFilePath == '':
+            s.trSessFilePath = ('trained/agents_{}x{}' + \
+                    '_{}_{}_{}_{}_{}.dat').format(
+                    configParams['m'],
+                    configParams['n'],
+                    configParams['numS'],
+                    configParams['numTopP'],
+                    configParams['numNewB'],
+                    configParams['numGamesToAve'],
+                    configParams['NNString'])
         if s.autoSaveEnabled and s.autoSaveFreq == 0:
             s.autoSaveFreq = s.configParams['autoSaveFreq']
 
     def newTrainingSession(s):
-        s.handleNewTrSessArgs()
+        s.handleTrSessArgs()
         trSess = TrainingSession()
         trSess.newSession(s.configParams)
         s.runTrainingSession(trSess)
@@ -78,7 +93,7 @@ class ControlHandler():
             elif a == 'number_of_games_to_average':
                 confParams['numGamesToAve'] = int(b)
             elif a == 'neural_network_structure':
-                confParams['NNString'] = b
+                confParams['NNString'] = s.__shortenNNString__(b)
                 confParams['NNStructure'] = s.__parseNNStr__(b)
             elif a == 'auto_save_freq':
                 confParams['autoSaveFreq'] = int(b)
@@ -91,6 +106,13 @@ class ControlHandler():
         txt = txt.replace('r', 'ReLU')
         txt = txt.replace('i', 'identity')
         return eval(txt)
+
+    def __shortenNNString__(s, NNStr):
+        t = 't'
+        s = 's'
+        r = 'r'
+        i = 'i'
+        return ''.join(map(lambda p:str(p[0])+p[1], eval(NNStr)))
 
     def getNumTurnsToSimulate(s):
         if not s.anMode:
@@ -115,37 +137,29 @@ class ControlHandler():
         return N
 
     def runTrainingSession(s, trSess):
+        N = s.getNumTurnsToSimulate()
+        if N < 1:
+            return
         while True:
-            N = s.getNumTurnsToSimulate()
-            if N < 1:
+            if N == 0:
+                N = s.getNumTurnsToSimulate()
+            if N < 0:
                 break
             N -= 1
-            trSess.genNo += 1
+            trSess.simulateOneGeneration()
+            print ('Gen #{}'.format(trSess.genNo))
 
-    def __shortenNNString__(s, NNStr):
-        t = 't'
-        s = 's'
-        r = 'r'
-        i = 'i'
-        return ''.join(map(lambda p:str(p[0])+p[1], eval(NNStr)))
+    def saveTrainingSession(s, trSess):
+        s.writeDataToFile(trSess, s.trSessFilePath)
 
-    def saveTrainingSession(s,
-            trSess,
-            folder='trained',
-            fileNamePrefix='agents'):
-        strNNStr = s.__shortenNNString__(trSess.NNString)
-        s.writeDataToFile(trSess,
-                '{}/{}_{}x{}_{}_{}_{}_{}_{}.dat'.format(
-                    folder,
-                    fileNamePrefix,
-                    trSess.m,
-                    trSess.n,
-                    trSess.numS,
-                    trSess.numTopP,
-                    trSess.numNewB,
-                    trSess.numGamesToAve,
-                    strNNStr))
+    def loadTrainingSession(s, filePath):
+        return s.readDataFromFile(filePath)
 
+    def contTrainingSession(s):
+        s.handleTrSessArgs()
+        trSess = s.loadTrainingSession(s.trSessFilePath)
+        s.runTrainingSession(trSess)
+        s.endTrainingSession(trSess)
 
     def endTrainingSession(s, trSess):
         s.saveTrainingSession(trSess)
@@ -161,13 +175,13 @@ class ControlHandler():
         else:
             v.playMovie()
 
-    def writeDataToFile(s, data, fileName):
-        f = open(fileName, 'wb')
+    def writeDataToFile(s, data, filePath):
+        f = open(filePath, 'wb')
         pickle.dump(data, f)
         f.close()
 
-    def readDataFromFile(s, fileName):
-        f = open(fileName, 'rb')
+    def readDataFromFile(s, filePath):
+        f = open(filePath, 'rb')
         new_d = pickle.load(f)
         f.close()
         return new_d
