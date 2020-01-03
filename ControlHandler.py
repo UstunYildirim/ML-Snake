@@ -1,7 +1,5 @@
-import numpy as np
 import sys, select, pickle
 from NNLayer import ReLU, sigmoid, identity
-from copy import deepcopy
 from Visualize import Visualize
 from SinglePlayer import SinglePlayer
 from TrainingSession import *
@@ -143,6 +141,8 @@ class ControlHandler():
             while N > 0:
                 trSess.simulateOneGeneration()
                 trSess.pickTopAgents()
+                trSess.purgeAndMultiply()
+
                 s.printTrSessStats(trSess)
                 N -= 1
                 if s.autoSaveEnabled and (trSess.genNo % s.autoSaveFreq == 0):
@@ -151,10 +151,10 @@ class ControlHandler():
             N = s.getNumGensToSimulate()
 
     def printTrSessStats(s, trSess):
-        print ('Gen #{}'.format(trSess.genNo))
+        print ('\nGen #{}'.format(trSess.genNo))
         for a in trSess.topPerfs[:s.configParams['numTopSnaToPrint']]:
             s.printAgentStats(a)
-        print ('')
+        print ('So far the best performance is {}'.format(trSess.bestAgentPerf))
 
     def printAgentStats(s, a):
         print(

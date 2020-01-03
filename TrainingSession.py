@@ -1,5 +1,6 @@
 from Agent import *
 from heapq import nlargest
+from copy import deepcopy
 
 class TrainingSession():
 
@@ -17,6 +18,9 @@ class TrainingSession():
         s.topAgents = []
         s.topPerfs = []
         s.stats = {}
+        s.bestAgent = None
+        s.bestAgentPerf = -10**10
+        s.bestAgentGameInfo = None
 
     def createNewAgents(s,m,n,k,NNStr):
         newAgents = []
@@ -34,9 +38,13 @@ class TrainingSession():
             agentPerformance = []
             for i in range(s.numGamesToAve):
                 a.newGame()
-                a.playTheGame(2*s.genNo) #TODO choose maxTurn param
-                agentPerformance.append(
-                        a.performanceEvaluation())
+                a.playTheGame(2*s.genNo)
+                p = a.performanceEvaluation()
+                agentPerformance.append(p)
+                if s.bestAgentPerf < p:
+                    s.bestAgent = a
+                    s.bestAgentPerf = p
+                    s.bestAgentGameInfo = (a.seqMoves, a.foodCoords)
             aveP = sum(agentPerformance)/s.numGamesToAve
             maxP = max(agentPerformance)
             minP = min(agentPerformance)
@@ -64,8 +72,21 @@ class TrainingSession():
                     s.stats[s.genNo]['min'],
                     s.stats[s.genNo]['rng']
                     ),
-                key=lambda a: a[3])
+                key=lambda a: a[2])
         for a in topAgentPerfPairs:
             s.topAgents.append(a[0])
             s.topPerfs.append(a[1:])
+
+    def purgeAndMultiply(s):
+        s.agents = s.topAgents
+
+        s.agents += s.createNewAgents(s.m, s.n, s.numNewB, s.NNStructure)
+
+        i = 0
+        while len(s.agents) < s.numS:
+            a = Agent(s.m,s.n, s.NNStructure)
+            a.NNLayers = deepcopy(s.agents[i].NNLayers)
+            a.randomVariation()
+            s.agents.append(a)
+            i = (i+1)%s.numTopP
 
