@@ -45,7 +45,7 @@ class Agent():
 
         return totalScore
 
-    def randomVariation(s, varMagnitude=0.3):
+    def randomVariation(s, varMagnitude=0.1):
         for layer in s.NNLayers:
             layer.randomVariation(varMagnitude)
 
@@ -64,6 +64,7 @@ class Agent():
         s.game.timeStep()
 
     def playTheGame(s, maxTurns = 0):
+        maxTurns = int(maxTurns)
         noFoodLimit = s.game.m + s.game.n + len(s.game.snake)
         lastScore = 0 
         i = 0

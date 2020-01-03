@@ -38,7 +38,7 @@ class TrainingSession():
             agentPerformance = []
             for i in range(s.numGamesToAve):
                 a.newGame()
-                a.playTheGame(2*s.genNo)
+                a.playTheGame(5 + s.genNo) #HyperParam
                 p = a.performanceEvaluation()
                 agentPerformance.append(p)
                 if s.bestAgentPerf < p:
@@ -53,11 +53,22 @@ class TrainingSession():
             maxPerformances.append(maxP)
             minPerformances.append(minP)
             rngPerformances.append(rngP)
-        s.stats[s.genNo] = {
+        s.stats['last'] = {
                 'ave': avePerformances,
                 'max': maxPerformances,
                 'min': minPerformances,
                 'rng': rngPerformances
+                }
+
+        aveAve = sum(avePerformances)/len(avePerformances)
+        aveMax = sum(maxPerformances)/len(maxPerformances)
+        aveMin = sum(minPerformances)/len(minPerformances)
+        aveRng = sum(rngPerformances)/len(rngPerformances)
+        s.stats[s.genNo] = {
+                'ave': aveAve,
+                'max': aveMax,
+                'min': aveMin,
+                'rng': aveRng 
                 }
 
     def pickTopAgents(s):
@@ -67,12 +78,12 @@ class TrainingSession():
                 s.numTopP,
                 zip(
                     s.agents,
-                    s.stats[s.genNo]['ave'],
-                    s.stats[s.genNo]['max'],
-                    s.stats[s.genNo]['min'],
-                    s.stats[s.genNo]['rng']
+                    s.stats['last']['ave'],
+                    s.stats['last']['max'],
+                    s.stats['last']['min'],
+                    s.stats['last']['rng']
                     ),
-                key=lambda a: a[2])
+                key=lambda a: a[1]) #HyperParam
         for a in topAgentPerfPairs:
             s.topAgents.append(a[0])
             s.topPerfs.append(a[1:])

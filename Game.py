@@ -52,14 +52,16 @@ class Game ():
 
         i = math.floor(m/3)
         j = math.floor(n/2)
-        s.state[i,j] = Game.food
-        s.foodCoords = (i,j)
 
         s.state[m-1-i,n-1-j] = Game.head
         s.state[m-1-i,n-1-j-1] = Game.tail
         s.snake = [(m-1-i,n-1-j),
                 (m-1-i,n-1-j-1)]
         s.snakeDir = Game.right
+
+        #s.state[i,j] = Game.food
+        #s.foodCoords = (i,j)
+        s.addNewFood()
 
     def isColliding(s, idx):
         if s.state[idx] == Game.wall \
