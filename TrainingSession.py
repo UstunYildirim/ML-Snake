@@ -15,6 +15,8 @@ class TrainingSession():
         s.genNo = 0
         s.agents = s.createNewAgents(s.m,s.n,s.numS,s.NNStructure)
         s.topAgents = []
+        s.topPerfs = []
+        s.stats = {}
 
     def createNewAgents(s,m,n,k,NNStr):
         newAgents = []
@@ -24,52 +26,46 @@ class TrainingSession():
 
     def simulateOneGeneration(s):
         s.genNo += 1
-        s.performances = []
+        avePerformances = []
+        maxPerformances = []
+        minPerformances = []
+        rngPerformances = []
         for a in s.agents:
             agentPerformance = []
             for i in range(s.numGamesToAve):
                 a.newGame()
-                a.playTheGame() #TODO choose maxTurn param
+                a.playTheGame(2*s.genNo) #TODO choose maxTurn param
                 agentPerformance.append(
                         a.performanceEvaluation())
-            agAvPerf = sum(agentPerformance)/s.numGamesToAve
-            s.performances.append(agAvPerf)
+            aveP = sum(agentPerformance)/s.numGamesToAve
+            maxP = max(agentPerformance)
+            minP = min(agentPerformance)
+            rngP = maxP-minP
+            avePerformances.append(aveP)
+            maxPerformances.append(maxP)
+            minPerformances.append(minP)
+            rngPerformances.append(rngP)
+        s.stats[s.genNo] = {
+                'ave': avePerformances,
+                'max': maxPerformances,
+                'min': minPerformances,
+                'rng': rngPerformances
+                }
 
     def pickTopAgents(s):
-        s.topAgents = nlargest(
+        s.topAgents = []
+        s.topPerfs = []
+        topAgentPerfPairs = nlargest(
                 s.numTopP,
-                zip(s.agents,s.performances),
-                key=lambda a: a[1])
-
-
-    def simulateGenerationAndPurge(s):
-        s.agents = nlargest(s.numTopP,
-                s.agents,
-                key = s.getPerformance)
-
-    def evolveAndMultiply(s):
-        topPerfs = [a.performanceEvaluation() for a in s.agents]
-        for a in s.agents:
-            a.newGame(Game(s.m,s.n))
-
-        s.createBrandNewSnakes(s.m,s.n,s.numNewB)
-
-        numSpotsToBeFilled = s.numS-len(s.agents)
-        perfSum = np.sum(topPerfs)
-        #NOT SUPER CLEAN
-        for i in range(s.numTopP):
-            numCopies = int(topPerfs[i]/perfSum*numSpotsToBeFilled)
-            newA = []
-            for j in range(numCopies):
-                newA.append(deepcopy(s.agents[i]))
-            for a in newA:
-                a.randomVariation()
-            s.agents += newA
-
-        i = 0
-        while len(s.agents) < s.numS:
-            a = deepcopy(s.agents[i])
-            a.randomVariation()
-            s.agents.append(a)
-            i = (i+1)%s.numTopP
+                zip(
+                    s.agents,
+                    s.stats[s.genNo]['ave'],
+                    s.stats[s.genNo]['max'],
+                    s.stats[s.genNo]['min'],
+                    s.stats[s.genNo]['rng']
+                    ),
+                key=lambda a: a[3])
+        for a in topAgentPerfPairs:
+            s.topAgents.append(a[0])
+            s.topPerfs.append(a[1:])
 

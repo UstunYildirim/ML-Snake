@@ -96,6 +96,8 @@ class ControlHandler():
                 confParams['NNStructure'] = s.__parseNNStr__(b)
             elif a == 'auto_save_freq':
                 confParams['autoSaveFreq'] = int(b)
+            elif a == 'number_of_top_snakes_to_print':
+                confParams['numTopSnaToPrint'] = int(b)
         f.close()
         return confParams
 
@@ -141,12 +143,24 @@ class ControlHandler():
             while N > 0:
                 trSess.simulateOneGeneration()
                 trSess.pickTopAgents()
-                print ('Gen #{}'.format(trSess.genNo))
-                for a in trSess.topAgents:
-                    print ('{:.2f}'.format(a[1]), end=' ')
-                print ('')
+                s.printTrSessStats(trSess)
                 N -= 1
+                if s.autoSaveEnabled and (trSess.genNo % s.autoSaveFreq == 0):
+                    s.saveTrainingSession(trSess)
+                    print('Auto-saved')
             N = s.getNumGensToSimulate()
+
+    def printTrSessStats(s, trSess):
+        print ('Gen #{}'.format(trSess.genNo))
+        for a in trSess.topPerfs[:s.configParams['numTopSnaToPrint']]:
+            s.printAgentStats(a)
+        print ('')
+
+    def printAgentStats(s, a):
+        print(
+                'ave {:.2f}, max {:.2f}, min {:.2f}, rng {:.2f}'.format(
+                    *a)
+                )
 
     def saveTrainingSession(s, trSess):
         s.writeDataToFile(trSess, s.trSessFilePath)
@@ -184,10 +198,3 @@ class ControlHandler():
         new_d = pickle.load(f)
         f.close()
         return new_d
-
-    def printAgentInfo(s):
-        print('Num Turns: ', s.game.numTurns)
-        print('Score: ', s.game.score)
-        print('Dead: ', s.game.dead)
-        print('Won: ', s.game.won)
-        print('Performance evaluation: ', s.performanceEvaluation())
