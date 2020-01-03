@@ -280,6 +280,9 @@ class ControlHandler():
             trSess.numGamesToAve = int(newNumGamesToAve)
         s.saveTrainingSession(trSess)
 
+    def hpo(s): #HyperParameter Optimization
+        pass
+
     def writeDataToFile(s, data, filePath):
         f = open(filePath, 'wb')
         pickle.dump(data, f)

@@ -90,6 +90,10 @@ class Main():
             controlHandler.visualize()
         elif s.mode == Main.changeParamsMode:
             controlHandler.changeParams()
+        elif s.mode == Main.hyperParamOptMode:
+            controlHandler.hpo()
+        else:
+            s.invalidArguments()
 
         
 

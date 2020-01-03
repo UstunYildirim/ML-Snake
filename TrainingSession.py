@@ -83,7 +83,7 @@ class TrainingSession():
                     s.stats['last']['min'],
                     s.stats['last']['rng']
                     ),
-                key=lambda a: a[1]) #HyperParam
+                key=lambda a: a[1]) #HyperParam ave seems to be the best choice
         for a in topAgentPerfPairs:
             s.topAgents.append(a[0])
             s.topPerfs.append(a[1:])

@@ -18,11 +18,48 @@ class Agent():
                         sigma = 0.3,
                         activation = NNStructure[i][1]))
 
-    def extractFeatures(s, game):
-        return game.state.flatten()/Game.boardRange
+    # def extractFeatures(s, game):
+    #     return game.state.flatten()/Game.boardRange
 
+    # def featureLength(s):
+    #     return s.m*s.n
+
+    def extractFeatures(s, game):
+        res = s.normFoodCoords(game)-s.normHeadCoords(game)
+        res = np.concatenate((res, s.obstaclesNearHead(game, 1)))
+        return res
     def featureLength(s):
-        return s.m*s.n
+        return 6
+
+    def __isObstacle__(s, game, pr, obstacleType = None):
+        (i,j) = pr
+        if i < 0 or i >= game.m or j < 0 or j >= game.n:
+            return 1
+        if obstacleType is not None:
+            return 1 if game.state[i,j] == obstacleType else 0
+        if game.state[i,j] & Game.wall or game.state[i,j] & Game.body:
+            return 1
+        return 0
+
+    def normFoodCoords(s, game):
+        [x,y] = game.foodCoords
+        return np.array([x/game.m, y/game.n])
+
+    def normHeadCoords(s, game):
+        [x,y] = game.snake[0]
+        return np.array([x/game.m, y/game.n])
+
+    def obstaclesNearHead(s, game, n=1, obsType = None): # be able to see n steps away
+        hi, hj = game.snake[0]
+        res = []
+        for sm in range(1,n+1):
+            for i in range(sm):
+                res.append((hi + i,     hj + (sm - i)))
+                res.append((hi + (sm-i), hj -  i))
+                res.append((hi - i, hj - (sm - i)))
+                res.append((hi - (sm-i), hj + i))
+        return [(lambda ij: s.__isObstacle__(game, ij, obsType))(ij) for ij in res]
+
 
     def newGame(s):
         s.game = Game(s.m, s.n)
