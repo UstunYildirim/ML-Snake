@@ -29,11 +29,14 @@ To change parameters of a saved data:
 To omit some of these changes use -:
     python3 Main.py -CP trained/agents_20x40.dat - 20 - -
 
-To see the top performer's game play:
+To see the top performer's (of the last generation) game play:
     python3 Main.py -V trained/agents_20x40.dat
 
-To see the third top performer's game play:
-    python3 Main.py -V trained/agents_20x40.dat 3"""
+To see the third top performer (of the last generation) play a new game:
+    python3 Main.py -V trained/agents_20x40.dat 3 n
+
+To see the top performer's (across all generations) game play :
+    python3 Main.py -V trained/agents_20x40.dat 0"""
 
 
 class Main():
@@ -83,6 +86,10 @@ class Main():
             controlHandler.newTrainingSession()
         elif s.mode == Main.contTrSessMode:
             controlHandler.contTrainingSession()
+        elif s.mode == Main.visualizeMode:
+            controlHandler.visualize()
+        elif s.mode == Main.changeParamsMode:
+            controlHandler.changeParams()
 
         
 

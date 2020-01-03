@@ -20,7 +20,7 @@ class TrainingSession():
         s.stats = {}
         s.bestAgent = None
         s.bestAgentPerf = -10**10
-        s.bestAgentGameInfo = None
+        #s.bestAgentGameInfo = None
 
     def createNewAgents(s,m,n,k,NNStr):
         newAgents = []
@@ -42,9 +42,9 @@ class TrainingSession():
                 p = a.performanceEvaluation()
                 agentPerformance.append(p)
                 if s.bestAgentPerf < p:
-                    s.bestAgent = a
+                    s.bestAgent = deepcopy(a)
                     s.bestAgentPerf = p
-                    s.bestAgentGameInfo = (a.seqMoves, a.foodCoords)
+                    #s.bestAgentGameInfo = deepcopy(a.seqMoves, a.foodCoords)
             aveP = sum(agentPerformance)/s.numGamesToAve
             maxP = max(agentPerformance)
             minP = min(agentPerformance)

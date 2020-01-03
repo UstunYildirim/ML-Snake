@@ -1,5 +1,5 @@
 from NNLayer import *
-from DataHandler import *
+from Game import *
 
 class Agent():
 
@@ -26,6 +26,7 @@ class Agent():
 
     def newGame(s):
         s.game = Game(s.m, s.n)
+        assert(s.featureLength() == len(s.extractFeatures(s.game)))
         s.seqMoves = ''
         s.foodCoords = [s.game.foodCoords]
 

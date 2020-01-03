@@ -178,15 +178,107 @@ class ControlHandler():
         s.saveTrainingSession(trSess)
 
     def visualize(s):
-        d = readDataFromFile(s.visualizeFN)
-        agents = d['agents']
-        topAgent = agents[s.snakeNoToVis]
-        v = Visualize(topAgent)
+        s.handleVisualizeArgs()
+        trSess = s.loadTrainingSession(s.trSessFilePath)
+        if s.visAgentRank == -1:
+            agentToVis = trSess.bestAgent
+        else:
+            agentToVis = trSess.agents[s.visAgentRank]
+
+        v = Visualize(agentToVis)
         
         if s.visNewGame:
-            pass
+            print("Not implemented yet.")
         else:
             v.playMovie()
+
+    def handleVisualizeArgs(s):
+        argv = s.argv
+        s.visAgentRank = 0
+        s.visNewGame = False
+        # -1 means top rank across all generations,
+        # 0 is top in the last generation
+
+        s.configFile = 'snake.conf'
+        s.trSessFilePath = ''
+        i = 2 
+        while i < len(argv):
+            if argv[i] == '-c':
+                s.configFile = argv[i+1]
+                i += 1
+            elif argv[i].isdigit():
+                s.visAgentRank = int(argv[i]) - 1
+            elif argv[i] == 'n':
+                s.visNewGame = True
+            elif s.trSessFilePath == '':
+                s.trSessFilePath = argv[i]
+            else:
+                raise Exception("Invalid arguments")
+            i += 1
+
+        s.configParams = s.getConfigParams()
+        configParams = s.configParams
+        if s.trSessFilePath == '':
+            s.trSessFilePath = ('trained/agents_{}x{}' + \
+                    '_{}_{}_{}_{}_{}.dat').format(
+                    configParams['m'],
+                    configParams['n'],
+                    configParams['numS'],
+                    configParams['numTopP'],
+                    configParams['numNewB'],
+                    configParams['numGamesToAve'],
+                    configParams['NNString'])
+
+    def changeParams(s):
+        prms = s.handleCPargs()
+        s.changeNumSnakesAndTopP(*prms)
+
+    def handleCPargs(s):
+        argv = s.argv
+        s.configFile = 'snake.conf'
+        s.trSessFilePath = ''
+        i = 2 
+        while i < len(argv):
+            if argv[i] == '-c':
+                s.configFile = argv[i+1]
+                i += 1
+            elif argv[i].isdigit() or argv[i] == '-':
+                newNumS = argv[i]
+                newNumTopP = argv[i+1]
+                newNumNewB = argv[i+2]
+                newNumGamesToAve = argv[i+3]
+                i += 3
+            elif s.trSessFilePath == '':
+                s.trSessFilePath = argv[i]
+            else:
+                raise Exception("Invalid arguments")
+            i += 1
+
+        s.configParams = s.getConfigParams()
+        configParams = s.configParams
+        if s.trSessFilePath == '':
+            s.trSessFilePath = ('trained/agents_{}x{}' + \
+                    '_{}_{}_{}_{}_{}.dat').format(
+                    configParams['m'],
+                    configParams['n'],
+                    configParams['numS'],
+                    configParams['numTopP'],
+                    configParams['numNewB'],
+                    configParams['numGamesToAve'],
+                    configParams['NNString'])
+        return (s.trSessFilePath, newNumS, newNumTopP, newNumNewB, newNumGamesToAve)
+
+    def changeNumSnakesAndTopP(s, fileName, newNumS, newNumTopP, newNumNewB, newNumGamesToAve):
+        trSess = s.loadTrainingSession(fileName)
+        if newNumS != '-':
+            trSess.numS = int(newNumS)
+        if newNumTopP != '-': 
+            trSess.numTopP = int(newNumTopP)
+        if newNumNewB != '-':
+            trSess.numNewB = int(newNumNewB)
+        if newNumGamesToAve != '-':
+            trSess.numGamesToAve = int(newNumGamesToAve)
+        s.saveTrainingSession(trSess)
 
     def writeDataToFile(s, data, filePath):
         f = open(filePath, 'wb')

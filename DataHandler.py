@@ -1,4 +1,5 @@
-import pickle
+# This file is not currenly being used.
+# It will most likely be incorporated into other files in the future.
 import numpy as np
 import math
 from Game import *
@@ -37,19 +38,3 @@ def obstaclesNearHead(game, n=1, obsType = None): # be able to see n steps away
             res.append((hi - (s-i), hj + i))
     return [(lambda ij: isObstacle(game, ij, obsType))(ij) for ij in res]
 
-def changeNumSnakesAndTopP(fileName, newNumS, newNumTopP, newNumNewB, newNumGamesToAve):
-    d = readDataFromFile(fileName)
-
-    if newNumS != '-':
-        d['numS'] = int(newNumS)
-
-    if newNumTopP != '-': 
-        d['numTopP'] = int(newNumTopP)
-
-    if newNumNewB != '-':
-        d['numNewB'] = int(newNumNewB)
-
-    if newNumGamesToAve != '-':
-        d['numGamesToAve'] = int(newNumGamesToAve)
-        
-    writeDataToFile(d, fileName)

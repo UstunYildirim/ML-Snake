@@ -1,5 +1,4 @@
 import numpy as np 
-from DataHandler import *
 from Game import *
 from Visualize import *
 
