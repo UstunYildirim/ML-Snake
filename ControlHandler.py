@@ -2,7 +2,6 @@ import numpy as np
 import sys, select, pickle
 from NNLayer import ReLU, sigmoid, identity
 from copy import deepcopy
-from heapq import nlargest
 from Visualize import Visualize
 from SinglePlayer import SinglePlayer
 from TrainingSession import *
@@ -114,7 +113,7 @@ class ControlHandler():
         i = 'i'
         return ''.join(map(lambda p:str(p[0])+p[1], eval(NNStr)))
 
-    def getNumTurnsToSimulate(s):
+    def getNumGensToSimulate(s):
         if not s.anMode:
             N = input("How many generation to simulate?\n")
             try:
@@ -137,17 +136,17 @@ class ControlHandler():
         return N
 
     def runTrainingSession(s, trSess):
-        N = s.getNumTurnsToSimulate()
-        if N < 1:
-            return
-        while True:
-            if N == 0:
-                N = s.getNumTurnsToSimulate()
-            if N < 0:
-                break
-            N -= 1
-            trSess.simulateOneGeneration()
-            print ('Gen #{}'.format(trSess.genNo))
+        N = s.getNumGensToSimulate()
+        while N > 0:
+            while N > 0:
+                trSess.simulateOneGeneration()
+                trSess.pickTopAgents()
+                print ('Gen #{}'.format(trSess.genNo))
+                for a in trSess.topAgents:
+                    print ('{:.2f}'.format(a[1]), end=' ')
+                print ('')
+                N -= 1
+            N = s.getNumGensToSimulate()
 
     def saveTrainingSession(s, trSess):
         s.writeDataToFile(trSess, s.trSessFilePath)
@@ -185,3 +184,10 @@ class ControlHandler():
         new_d = pickle.load(f)
         f.close()
         return new_d
+
+    def printAgentInfo(s):
+        print('Num Turns: ', s.game.numTurns)
+        print('Score: ', s.game.score)
+        print('Dead: ', s.game.dead)
+        print('Won: ', s.game.won)
+        print('Performance evaluation: ', s.performanceEvaluation())

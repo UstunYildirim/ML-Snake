@@ -44,6 +44,7 @@ class Main():
     visualizeMode     = 4
     changeParamsMode  = 5
     hyperParamOptMode = 6
+            
 
     def readArgs(s, argv):
         try:

@@ -3,14 +3,13 @@ from DataHandler import *
 
 class Agent():
 
-    #TODO: create AI_Architecture class
-    #      to allow creation and mixture
-    #      of different kinds of AI simultaneously
-    def __init__(s, game, NNStructure): 
-        s.performanceEvaluated = None
-        s.game = game
+    def __init__(s, m, n, NNStructure): 
+        s.m = m
+        s.n = n
         s.NNLayers = []
-        NNStructure = [(featureLength(game),None)] + NNStructure + [(4,identity)]
+        NNStructure = [(s.featureLength(),None)] + \
+                NNStructure + \
+                [(4,identity)]
         for i in range(1,len(NNStructure)):
             s.NNLayers.append(
                     NNLayer(NNStructure[i-1][0],
@@ -18,19 +17,19 @@ class Agent():
                         mu = 0,
                         sigma = 0.3,
                         activation = NNStructure[i][1]))
-        s.seqMoves = ''
-        s.foodCoords = [s.game.foodCoords]
 
-    def newGame(s, game):
-        s.game = game
+    def extractFeatures(s, game):
+        return game.state.flatten()/Game.boardRange
+
+    def featureLength(s):
+        return s.m*s.n
+
+    def newGame(s):
+        s.game = Game(s.m, s.n)
         s.seqMoves = ''
         s.foodCoords = [s.game.foodCoords]
-        s.performanceEvaluated = None
 
     def performanceEvaluation(s):
-        if s.performanceEvaluated is not None:
-            return s.performanceEvaluated
-
         baseNo = s.game.m*s.game.n
         totalScore = 5*baseNo
 
@@ -44,8 +43,7 @@ class Agent():
         totalScore -= np.abs(fi-hi)
         totalScore -= np.abs(fj-hj)
 
-        s.performanceEvaluated = totalScore
-        return s.performanceEvaluated
+        return totalScore
 
     def randomVariation(s, varMagnitude=0.3):
         for layer in s.NNLayers:
@@ -54,7 +52,7 @@ class Agent():
     def playSingleTurn(s):
         if s.game.dead or s.game.won:
             return
-        inp = extractFeatures(s.game)
+        inp = s.extractFeatures(s.game)
         for layer in s.NNLayers:
             inp = layer.forwardPropogate(inp)
         moveIndex = np.argmax(inp)
@@ -65,8 +63,8 @@ class Agent():
                             Game.right][moveIndex]
         s.game.timeStep()
 
-    def finishTheGame(s):
-        noFoodLimit = int((s.game.m*s.game.n)/3)
+    def playTheGame(s, maxTurns = 0):
+        noFoodLimit = s.game.m + s.game.n + len(s.game.snake)
         lastScore = 0 
         i = 0
         while not (s.game.dead or s.game.won):
@@ -78,12 +76,6 @@ class Agent():
                 i = 0
             if i == noFoodLimit:
                 break
-        s.performanceEvaluation()
-        return s
+            if s.game.numTurns == maxTurns:
+                break
 
-    def printAgentInfo(s):
-        print('Num Turns: ', s.game.numTurns)
-        print('Score: ', s.game.score)
-        print('Dead: ', s.game.dead)
-        print('Won: ', s.game.won)
-        print('Performance evaluation: ', s.performanceEvaluation())

@@ -37,24 +37,6 @@ def obstaclesNearHead(game, n=1, obsType = None): # be able to see n steps away
             res.append((hi - (s-i), hj + i))
     return [(lambda ij: isObstacle(game, ij, obsType))(ij) for ij in res]
 
-def extractFeatures(game):
-    return game.state.flatten()/Game.boardRange
-    # fi, fj = game.foodCoords
-    # hi, hj = game.snake[0]
-
-    # res = game.state.flatten() == Game.body
-    # res2 = [hi, hj, fi, fj]
-
-    # # res = [(fi-hi),
-    # #         (fj-hj),
-    # #         ] + obstaclesNearHead(game, 2, Game.wall) \
-    # #             + obstaclesNearHead(game, 2, Game.body)
-
-    # return np.concatenate((res,res2))
-
-def featureLength(game):
-    return len(extractFeatures(game))
-
 def changeNumSnakesAndTopP(fileName, newNumS, newNumTopP, newNumNewB, newNumGamesToAve):
     d = readDataFromFile(fileName)
 

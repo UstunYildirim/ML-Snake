@@ -1,4 +1,5 @@
 from Agent import *
+from heapq import nlargest
 
 class TrainingSession():
 
@@ -13,27 +14,33 @@ class TrainingSession():
         s.NNStructure = params['NNStructure']
         s.genNo = 0
         s.agents = s.createNewAgents(s.m,s.n,s.numS,s.NNStructure)
+        s.topAgents = []
 
     def createNewAgents(s,m,n,k,NNStr):
         newAgents = []
         for i in range(k):
-            newAgents.append(Agent(Game(m,n), NNStr))
+            newAgents.append(Agent(m,n, NNStr))
         return newAgents
 
     def simulateOneGeneration(s):
         s.genNo += 1
+        s.performances = []
+        for a in s.agents:
+            agentPerformance = []
+            for i in range(s.numGamesToAve):
+                a.newGame()
+                a.playTheGame() #TODO choose maxTurn param
+                agentPerformance.append(
+                        a.performanceEvaluation())
+            agAvPerf = sum(agentPerformance)/s.numGamesToAve
+            s.performances.append(agAvPerf)
 
-    def getPerformance(s, a):
-        p = 0
-        a.finishTheGame()
-        p += a.performanceEvaluation()
-        for i in range(s.numGamesToAve-1):
-            a.newGame(Game(s.m,s.n))
-            a.finishTheGame()
-            p += a.performanceEvaluation()
-        av = p/s.numGamesToAve
-        a.performanceEvaluated = av
-        return av
+    def pickTopAgents(s):
+        s.topAgents = nlargest(
+                s.numTopP,
+                zip(s.agents,s.performances),
+                key=lambda a: a[1])
+
 
     def simulateGenerationAndPurge(s):
         s.agents = nlargest(s.numTopP,
