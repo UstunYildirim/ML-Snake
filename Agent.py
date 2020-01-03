@@ -26,10 +26,10 @@ class Agent():
 
     def extractFeatures(s, game):
         res = s.normFoodCoords(game)-s.normHeadCoords(game)
-        res = np.concatenate((res, s.obstaclesNearHead(game, 1)))
+        res = np.concatenate((res, s.obstaclesNearHead(game, 2)))
         return res
     def featureLength(s):
-        return 6
+        return 14
 
     def __isObstacle__(s, game, pr, obstacleType = None):
         (i,j) = pr

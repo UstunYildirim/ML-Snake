@@ -38,9 +38,6 @@ class Visualize():
     def playMovie(s):
         moves = [s.__letterToMoveConv__(l) for l in s.agent.seqMoves]
         foods = s.agent.foodCoords
-        print("MOVES ", s.agent.seqMoves)
-        print("FOODS ", foods)
-        print("HEAD ", s.playground.snake[0])
         i = 0 
         j = 0
         while i <= len(moves):
