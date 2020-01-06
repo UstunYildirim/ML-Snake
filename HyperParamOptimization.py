@@ -1,4 +1,4 @@
-from TrainingSession import *
+from EvolutionSession import *
 
 class HyperParamOptimization():
 
@@ -29,4 +29,4 @@ class HyperParamOptimization():
                             s.runSingleTrSessHyperParams(params, mins)
 
     def runSingleTrSessHyperParams(s, params, mins):
-        trainingSession = TrainingSession(s, params)
+        evolutionSession = evolutionSession(s, params)

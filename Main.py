@@ -83,9 +83,9 @@ class Main():
         if s.mode == Main.singPlayerMode:
             controlHandler.singlePlayer()
         elif s.mode == Main.newTrSessMode:
-            controlHandler.newTrainingSession()
+            controlHandler.newEvolutionSession()
         elif s.mode == Main.contTrSessMode:
-            controlHandler.contTrainingSession()
+            controlHandler.contEvolutionSession()
         elif s.mode == Main.visualizeMode:
             controlHandler.visualize()
         elif s.mode == Main.changeParamsMode:
