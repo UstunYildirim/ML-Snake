@@ -97,7 +97,8 @@ class Agent():
         s.game.timeStep()
 
     def shouldHaveDecided(s, Y):
-        dA = -(np.divide(Y,s.lastActivation)-np.divide(1-Y,1-s.lastActivation))
+        a = s.lastActivation*0.99+0.005 # to avoid overflow
+        dA = -(np.divide(Y,a)-np.divide(1-Y,1-a))
         for layer in reversed(s.NNLayers):
             dA = layer.backwardPropogate(dA)
         for layer in s.NNLayers:
