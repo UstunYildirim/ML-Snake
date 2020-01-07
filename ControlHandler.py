@@ -129,10 +129,10 @@ class ControlHandler():
         return confParams
 
     def __parseNNStr__(s, txt):#FIXME: these may replace each other!
-        txt = txt.replace('t', 'np.tanh')
-        txt = txt.replace('i', 'identity')
-        txt = txt.replace('s', 'sigmoid')
-        txt = txt.replace('r', 'ReLU')
+        t = np.tanh
+        i = identity
+        s = sigmoid
+        r = ReLU
         return eval(txt)
 
     def __shortenNNString__(s, NNStr):
@@ -210,7 +210,7 @@ class ControlHandler():
                     s.printSSsessStats(ssSess)
                     ssSess.newGame()
                 N -= 1
-                if s.autoSaveEnabled and (ssSess.genNo % s.autoSaveFreq == 0):
+                if s.autoSaveEnabled and (ssSess.turnNo % s.autoSaveFreq == 0):
                     s.saveEvolutionSession(ssSess)
                     print('Auto-saved')
             N = s.getNumTurnsToMove()
