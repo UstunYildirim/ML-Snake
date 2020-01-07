@@ -25,10 +25,10 @@ class Agent():
     # 
     def extractFeatures(s, game):
         res = s.normFoodCoords(game)-s.normHeadCoords(game)
-        res = np.concatenate((res, s.obstaclesNearHead(game, 2)))
+        res = np.concatenate((res, s.obstaclesNearHead(game, 4)))
         return res
     def featureLength(s):
-        return 14
+        return 42
 
     def __isObstacle__(s, game, pr, obstacleType = None):
         (i,j) = pr
@@ -82,7 +82,7 @@ class Agent():
 
         return totalScore
 
-    def randomVariation(s, varMagnitude=0.1):
+    def randomVariation(s, varMagnitude=0.01):
         for layer in s.NNLayers:
             layer.randomVariation(varMagnitude)
 
