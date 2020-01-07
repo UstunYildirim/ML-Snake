@@ -54,7 +54,7 @@ class NNLayer():
         s.cache['db'] = db
         return dAprev
 
-    def updateParams(s, learningRate = 0.1):
+    def updateParams(s, learningRate = 0.001):
         s.W    = s.W    - learningRate * s.cache['dW']
         s.bias = s.bias - learningRate * s.cache['db']
     
