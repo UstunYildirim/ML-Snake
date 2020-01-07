@@ -13,6 +13,7 @@ class SingleSnakeSession():
         s.turnNo = 0
         s.agent = s.createNewAgent(s.m,s.n,s.NNStructure)
         s.newGame()
+        s.agents = s.fourCopies(s.agent)
         s.stats = {}
 
     def createNewAgent(s,m,n,NNStr):
@@ -21,14 +22,17 @@ class SingleSnakeSession():
     def newGame(s):
         s.agent.newGame()
 
-    def fourCopies(s, agent):
-        return [deepcopy(agent) for _ in range(4)]
+    def fourCopies(s, copyMe):
+        return [deepcopy(copyMe) for _ in range(4)]
 
     def trainOneTurn(s):
         s.turnNo += 1
-        agents = s.fourCopies(s.agent)
+        s.agents[0].game = deepcopy(s.agent.game)
+        s.agents[1].game = deepcopy(s.agent.game)
+        s.agents[2].game = deepcopy(s.agent.game)
+        s.agents[3].game = deepcopy(s.agent.game)
         perfs = []
-        for i, a in enumerate(agents):
+        for i, a in enumerate(s.agents):
             a.playForcedMove(i)
             perfs.append(a.performanceEvaluation())
         s.agent.playSingleTurn()
