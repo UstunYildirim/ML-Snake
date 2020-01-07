@@ -11,12 +11,12 @@ def identity(x):
 
 class NNLayer():
 
-    def __init__(s, numInputs, numOutputs, randomize=True, mu=0, sigma=0.01, activation = sigmoid):
+    def __init__(s, numInputs, numOutputs, randomize=True, activation = sigmoid):
         s.numInputs = numInputs
         s.numOutputs = numOutputs
         s.activation = activation
         if randomize:
-            s.W = np.random.randn(s.numOutputs, s.numInputs)*sigma+mu
+            s.W = np.random.randn(s.numOutputs, s.numInputs)*np.sqrt(2/s.numOutputs)
             s.bias = np.zeros((s.numOutputs, 1))
         else:
             s.W = np.zeros((s.numOutputs, s.numInputs))
@@ -42,7 +42,7 @@ class NNLayer():
         elif s.activation == ReLU:
             gpz = (z>0).astype(int)
         elif s.activation == np.tanh:
-            gpz = np.square(np.sech(z))
+            gpz = np.square(2/(np.exp(z)+np.exp(-z)))
         else:
             raise Exception('Not implemented')
         dZ = np.multiply(gpz, dA)

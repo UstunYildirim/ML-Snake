@@ -17,18 +17,18 @@ class Agent():
                         NNStructure[i][0],
                         activation = NNStructure[i][1]))
 
-    def extractFeatures(s, game):
-        return game.state.flatten()/Game.boardRange
-
-    def featureLength(s):
-        return s.m*s.n
-
     # def extractFeatures(s, game):
-    #     res = s.normFoodCoords(game)-s.normHeadCoords(game)
-    #     res = np.concatenate((res, s.obstaclesNearHead(game, 2)))
-    #     return res
+    #     return game.state.flatten()/Game.boardRange
+    # 
     # def featureLength(s):
-    #     return 14
+    #     return s.m*s.n
+    # 
+    def extractFeatures(s, game):
+        res = s.normFoodCoords(game)-s.normHeadCoords(game)
+        res = np.concatenate((res, s.obstaclesNearHead(game, 2)))
+        return res
+    def featureLength(s):
+        return 14
 
     def __isObstacle__(s, game, pr, obstacleType = None):
         (i,j) = pr
@@ -70,7 +70,7 @@ class Agent():
         baseNo = s.game.m*s.game.n
         totalScore = 5*baseNo
 
-        totalScore -= np.sqrt(s.game.numTurns)
+        #totalScore -= np.sqrt(s.game.numTurns)
         totalScore += baseNo * s.game.score
         totalScore -= 1.5*baseNo * s.game.dead
         totalScore += 20*baseNo * s.game.won
@@ -101,7 +101,7 @@ class Agent():
         for layer in reversed(s.NNLayers):
             dA = layer.backwardPropogate(dA)
         for layer in s.NNLayers:
-            layer.updateParams(0.0001)
+            layer.updateParams(0.01)
 
 
     def playSingleTurn(s):

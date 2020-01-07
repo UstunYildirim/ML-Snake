@@ -38,7 +38,8 @@ class SingleSnakeSession():
         s.agent.playSingleTurn()
 
         sugMove = s.suggestedMove(perfs)
-        s.agent.shouldHaveDecided(sugMove)
+        for _ in range(np.random.randint(0,300)):
+            s.agent.shouldHaveDecided(sugMove)
 
         pE = s.agent.performanceEvaluation()
         if 'topPerf' not in s.stats or s.stats['topPerf'] < pE:
@@ -47,6 +48,7 @@ class SingleSnakeSession():
         if s.agent.game.dead or s.agent.game.won:
             s.stats['lastPerf'] = pE
             s.stats['lastNumTurn'] = s.agent.game.numTurns
+            s.stats['lastScore'] = s.agent.game.score
             return 1
         return 0
 

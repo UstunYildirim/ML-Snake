@@ -128,11 +128,11 @@ class ControlHandler():
         f.close()
         return confParams
 
-    def __parseNNStr__(s, txt):
+    def __parseNNStr__(s, txt):#FIXME: these may replace each other!
         txt = txt.replace('t', 'np.tanh')
+        txt = txt.replace('i', 'identity')
         txt = txt.replace('s', 'sigmoid')
         txt = txt.replace('r', 'ReLU')
-        txt = txt.replace('i', 'identity')
         return eval(txt)
 
     def __shortenNNString__(s, NNStr):
@@ -217,9 +217,10 @@ class ControlHandler():
 
     def printSSsessStats(s, ssSess):
         print ('\nTurn #{}'.format(ssSess.turnNo))
-        print ('Last performance is {:.2f}, game over at turn #{}'.format(
+        print ('Last performance is {:.2f}, game over at turn #{}, game score: {}'.format(
             ssSess.stats['lastPerf'],
-            ssSess.stats['lastNumTurn']))
+            ssSess.stats['lastNumTurn'],
+            ssSess.stats['lastScore']))
         print ('So far the best performance is {:.2f}'.format(ssSess.stats['topPerf']))
 
     def printEvSessStats(s, evSess):
