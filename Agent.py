@@ -101,7 +101,9 @@ class Agent():
         for layer in reversed(s.NNLayers):
             dA = layer.backwardPropogate(dA)
         for layer in s.NNLayers:
-            layer.updateParams(0.01)
+            layer.updateParams(0.0001)
+            print(np.max(layer.W))
+            print(np.max(layer.bias))
 
 
     def playSingleTurn(s):
