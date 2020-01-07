@@ -54,9 +54,9 @@ class NNLayer():
         s.cache['db'] = db
         return dAprev
 
-    def updateParams(s, learningRate = 0.001):
-        s.W    = s.W    - learningRate * s.cache['dW']
-        s.bias = s.bias - learningRate * s.cache['db']
+    def updateParams(s, learningRate = 0.001, lambd = 0.001):
+        s.W    = (1-lambd)*s.W - learningRate * s.cache['dW']
+        s.bias = s.bias        - learningRate * s.cache['db']
     
     def randomVariation(s, varMagnitude=0.01):
         deltaW = np.random.randn(s.numOutputs,s.numInputs)
