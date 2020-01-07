@@ -15,8 +15,6 @@ class Agent():
             s.NNLayers.append(
                     NNLayer(NNStructure[i-1][0],
                         NNStructure[i][0],
-                        mu = 0,
-                        sigma = 0.3,
                         activation = NNStructure[i][1]))
 
     def extractFeatures(s, game):
@@ -103,7 +101,7 @@ class Agent():
         for layer in reversed(s.NNLayers):
             dA = layer.backwardPropogate(dA)
         for layer in s.NNLayers:
-            layer.updateParams(0.01)
+            layer.updateParams(0.0001)
 
 
     def playSingleTurn(s):

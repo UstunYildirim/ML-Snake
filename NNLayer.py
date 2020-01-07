@@ -11,10 +11,9 @@ def identity(x):
 
 class NNLayer():
 
-    def __init__(s, numInputs, numOutputs, randomize=True, threshold=0.5, mu=0, sigma=1, activation = sigmoid):
+    def __init__(s, numInputs, numOutputs, randomize=True, mu=0, sigma=0.01, activation = sigmoid):
         s.numInputs = numInputs
         s.numOutputs = numOutputs
-        s.threshold = threshold
         s.activation = activation
         if randomize:
             s.W = np.random.randn(s.numOutputs, s.numInputs)*sigma+mu
