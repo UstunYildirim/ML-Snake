@@ -19,6 +19,7 @@ class Visualize():
             s.playground.state[s.playground.foodCoords] = Game.empty
             s.playground.state[s.agent.foodCoords[0]] = Game.food
             s.playground.foodCoords = s.agent.foodCoords[0]
+
     def __letterToMoveConv__(s,l):
         if l == 'h':
             return Game.left

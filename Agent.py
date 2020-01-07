@@ -1,3 +1,4 @@
+import numpy as np
 from NNLayer import *
 from Game import *
 
@@ -9,7 +10,7 @@ class Agent():
         s.NNLayers = []
         NNStructure = [(s.featureLength(),None)] + \
                 NNStructure + \
-                [(4,identity)]
+                [(4,sigmoid)]
         for i in range(1,len(NNStructure)):
             s.NNLayers.append(
                     NNLayer(NNStructure[i-1][0],
@@ -87,13 +88,32 @@ class Agent():
         for layer in s.NNLayers:
             layer.randomVariation(varMagnitude)
 
+    def playForcedMove(s, moveIndex):
+        if s.game.dead or s.game.won:
+            return
+        s.seqMoves += ("hjkl"[moveIndex])
+        s.game.snakeDir = [Game.left,
+                            Game.down,
+                            Game.up,
+                            Game.right][moveIndex]
+        s.game.timeStep()
+
+    def shouldHaveDecided(s, Y):
+        dA = -(np.divide(Y,s.lastActivation)-np.divide(1-Y,1-s.lastActivation))
+        for layer in reversed(s.NNLayers):
+            dA = layer.backwardPropogate(dA)
+        for layer in s.NNLayers:
+            layer.updateParams(0.01)
+
+
     def playSingleTurn(s):
         if s.game.dead or s.game.won:
             return
         inp = s.extractFeatures(s.game)
         for layer in s.NNLayers:
             inp = layer.forwardPropogate(inp)
-        moveIndex = np.argmax(inp)
+        s.lastActivation = inp.reshape(4,1)
+        moveIndex = np.argmax(s.lastActivation)
         s.seqMoves += ("hjkl"[moveIndex])
         s.game.snakeDir = [Game.left,
                             Game.down,

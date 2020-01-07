@@ -6,14 +6,17 @@ man = """Example Usage:
 To try single player mode on a 7 by 10 board
     Main.py -SP 7 10
 
-To start new session based on default config file:
-    Main.py -N
+To start new single snake learning session based on default config file:
+    Main.py -Nss
 
-To start new session with all-nighter mode and autosaving every 30 turns:
-    Main.py -N -an+30
+To start new evolution session based on default config file:
+    Main.py -Ne
 
-To start a new session with given config file:
-    Main.py -N -c snake.conf
+To start new evolution session with all-nighter mode and autosaving every 30 turns:
+    Main.py -Ne -an+30
+
+To start a new evolution session with given config file:
+    Main.py -Ne -c snake.conf
 
 To continue from saved data with all-nighter mode enabled:
     Main.py -L trained/agents_20x40.dat -an
@@ -42,11 +45,12 @@ To see the top performer's (across all generations) game play :
 class Main():
 
     singPlayerMode    = 1
-    newTrSessMode     = 2
-    contTrSessMode    = 3
+    newEvSessMode     = 2
+    contSessMode      = 3
     visualizeMode     = 4
     changeParamsMode  = 5
     hyperParamOptMode = 6
+    newSSsessMode     = 7
             
 
     def readArgs(s, argv):
@@ -58,10 +62,12 @@ class Main():
                     raise Exception()
             elif argv[1] == '-SP':
                 s.mode = Main.singPlayerMode
-            elif argv[1] == '-N':
-                s.mode = Main.newTrSessMode
+            elif argv[1] == '-Ne':
+                s.mode = Main.newEvSessMode
+            elif argv[1] == '-Nss':
+                s.mode = Main.newSSsessMode
             elif argv[1] == '-L':
-                s.mode = Main.contTrSessMode
+                s.mode = Main.contSessMode
             elif argv[1] == '-V':
                 s.mode = Main.visualizeMode
             elif argv[1] == '-CP':
@@ -82,10 +88,12 @@ class Main():
         s.readArgs(argv)
         if s.mode == Main.singPlayerMode:
             controlHandler.singlePlayer()
-        elif s.mode == Main.newTrSessMode:
+        elif s.mode == Main.newEvSessMode:
             controlHandler.newEvolutionSession()
-        elif s.mode == Main.contTrSessMode:
-            controlHandler.contEvolutionSession()
+        elif s.mode == Main.newSSsessMode:
+            controlHandler.newSSsession()
+        elif s.mode == Main.contSessMode:
+            controlHandler.contSession()
         elif s.mode == Main.visualizeMode:
             controlHandler.visualize()
         elif s.mode == Main.changeParamsMode:

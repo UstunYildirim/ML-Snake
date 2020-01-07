@@ -20,7 +20,6 @@ class EvolutionSession():
         s.stats = {}
         s.bestAgent = None
         s.bestAgentPerf = -10**10
-        #s.bestAgentGameInfo = None
 
     def createNewAgents(s,m,n,k,NNStr):
         newAgents = []

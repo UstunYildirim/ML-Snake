@@ -3,9 +3,13 @@ from NNLayer import ReLU, sigmoid, identity
 from Visualize import Visualize
 from SinglePlayer import SinglePlayer
 from EvolutionSession import *
+from SingleSnakeSession import *
 
 
 class ControlHandler():
+
+    evolutionSess = 'evolution'
+    singleSnakeSess = 'singleSnake'
 
     def __init__(s, argv):
         s.argv = argv
@@ -18,12 +22,12 @@ class ControlHandler():
         sp = SinglePlayer(m,n)
         sp.Play()
 
-    def handleEvSessArgs(s):
+    def handleSessArgs(s):
         argv = s.argv
         s.anMode = False
         s.autoSaveEnabled = False
         s.configFile = 'snake.conf'
-        s.evSessFilePath = ''
+        s.sessFilePath = ''
         i = 2 
         while i < len(argv):
             if argv[i] == '-c':
@@ -39,33 +43,56 @@ class ControlHandler():
                 s.anMode = True
                 s.autoSaveEnabled = True
                 s.autoSaveFreq = int(argv[i][4:])
-            elif s.evSessFilePath == '':
-                s.evSessFilePath = argv[i]
+            elif s.sessFilePath == '':
+                s.sessFilePath = argv[i]
             else:
                 raise Exception("Invalid arguments")
             i += 1
 
         s.configParams = s.getConfigParams()
         configParams = s.configParams
-        if s.evSessFilePath == '':
-            s.evSessFilePath = ('trained/agents_{}x{}' + \
-                    '_{}_{}_{}_{}_{}.dat').format(
-                    configParams['m'],
-                    configParams['n'],
-                    configParams['numS'],
-                    configParams['numTopP'],
-                    configParams['numNewB'],
-                    configParams['numGamesToAve'],
-                    configParams['NNString'])
+        if s.sessType == '':
+            s.sessType = configParams['sessType']
+        if s.sessType not in [
+                ControlHandler.evolutionSess,
+                ControlHandler.singleSnakeSess
+                ]:
+            raise Exception('Session Type Error')
+        if s.sessFilePath == '':
+            if s.sessType == ControlHandler.evolutionSess:
+                s.sessFilePath = ('trained/agents_{}x{}' + \
+                        '_{}_{}_{}_{}_{}.dat').format(
+                        configParams['m'],
+                        configParams['n'],
+                        configParams['numS'],
+                        configParams['numTopP'],
+                        configParams['numNewB'],
+                        configParams['numGamesToAve'],
+                        configParams['NNString'])
+            elif s.sessType == ControlHandler.singleSnakeSess:
+                s.sessFilePath = ('trained/agents_{}x{}' + \
+                        '_{}.dat').format(
+                        configParams['m'],
+                        configParams['n'],
+                        configParams['NNString'])
         if s.autoSaveEnabled and s.autoSaveFreq == 0:
             s.autoSaveFreq = s.configParams['autoSaveFreq']
 
     def newEvolutionSession(s):
-        s.handleEvSessArgs()
+        s.sessType = ControlHandler.evolutionSess
+        s.handleSessArgs()
         evSess = EvolutionSession()
         evSess.newSession(s.configParams)
         s.runEvolutionSession(evSess)
         s.endEvolutionSession(evSess)
+
+    def newSSsession(s):
+        s.sessType = ControlHandler.singleSnakeSess
+        s.handleSessArgs()
+        ssSess = SingleSnakeSession()
+        ssSess.newSession(s.configParams)
+        s.runSSsession(ssSess)
+        s.endSSsession(ssSess)
 
     def getConfigParams(s):
         confParams = {}
@@ -96,6 +123,8 @@ class ControlHandler():
                 confParams['autoSaveFreq'] = int(b)
             elif a == 'number_of_top_snakes_to_print':
                 confParams['numTopSnaToPrint'] = int(b)
+            elif a == 'session_type':
+                confParams['sessType'] = b
         f.close()
         return confParams
 
@@ -150,6 +179,47 @@ class ControlHandler():
                     print('Auto-saved')
             N = s.getNumGensToSimulate()
 
+    def getNumTurnsToMove(s):
+        if not s.anMode:
+            N = input("How many turns to simulate?\n")
+            try:
+                N = int(N)
+                if type(N) is not int or N < 0:
+                    raise Exception()
+            except:
+                N = -1
+        else: # anMode
+            N = 1
+            inp, out, exc = select.select([sys.stdin],[],[], 0.001)
+            if inp:
+                N = sys.stdin.readline().strip()
+            try:
+                N = int(N)
+                if type(N) is not int or N < 0:
+                    raise Exception()
+            except:
+                N = -1
+        return N
+
+    def runSSsession(s, ssSess):
+        N = s.getNumTurnsToMove()
+        while N > 0:
+            while N > 0:
+                gameOver = ssSess.trainOneTurn()
+                if gameOver:
+                    s.printSSsessStats(ssSess)
+                    ssSess.newGame()
+                N -= 1
+                if s.autoSaveEnabled and (ssSess.genNo % s.autoSaveFreq == 0):
+                    s.saveEvolutionSession(ssSess)
+                    print('Auto-saved')
+            N = s.getNumTurnsToMove()
+
+    def printSSsessStats(s, ssSess):
+        print ('\nTurn #{}'.format(ssSess.turnNo))
+        print ('Last performance is {}'.format(ssSess.stats['lastPerf']))
+        print ('So far the best performance is {}'.format(ssSess.stats['topPerf']))
+
     def printEvSessStats(s, evSess):
         print ('\nGen #{}'.format(evSess.genNo))
         for a in evSess.topPerfs[:s.configParams['numTopSnaToPrint']]:
@@ -162,24 +232,47 @@ class ControlHandler():
                     *a)
                 )
 
-    def saveEvolutionSession(s, evSess):
-        s.writeDataToFile(evSess, s.evSessFilePath)
+    def saveSSsession(s, ssSess):
+        d = {'type': ControlHandler.singleSnakeSess, ControlHandler.singleSnakeSess: ssSess}
+        s.writeDataToFile(d, s.sessFilePath)
 
-    def loadEvolutionSession(s, filePath):
+    def saveEvolutionSession(s, evSess):
+        d = {'type': ControlHandler.evolutionSess, ControlHandler.evolutionSess: evSess}
+        s.writeDataToFile(d, s.sessFilePath)
+
+    def loadSession(s, filePath):
         return s.readDataFromFile(filePath)
 
-    def contEvolutionSession(s):
-        s.handleEvSessArgs()
-        evSess = s.loadEvolutionSession(s.evSessFilePath)
+    def contSession(s):
+        s.sessType = ''
+        s.handleSessArgs()
+        sess = s.loadSession(s.sessFilePath)
+        if sess['type'] == ControlHandler.evolutionSess:
+            s.contEvolutionSession(
+                    sess[ControlHandler.evolutionSess])
+        elif sess['type'] == ControlHandler.singleSnakeSess:
+            s.contSingleSnakeSess(
+                    sess[ControlHandler.singleSnakeSess])
+
+    def contEvolutionSession(s, evSess):
         s.runEvolutionSession(evSess)
         s.endEvolutionSession(evSess)
+
+    def endSSsession(s, ssSess):
+        s.saveSSsession(ssSess)
 
     def endEvolutionSession(s, evSess):
         s.saveEvolutionSession(evSess)
 
+    def contSingleSnakeSess(s, ssSess):
+        s.runSSsession(ssSess)
+        s.endSSsession(ssSess)
+
     def visualize(s):
         s.handleVisualizeArgs()
-        evSess = s.loadEvolutionSession(s.evSessFilePath)
+        evSess = s.loadSession(s.sessFilePath)
+        raise Exception(
+                "Different possible sessions are not implemented!")
         if s.visAgentRank == -1:
             agentToVis = evSess.bestAgent
         else:
@@ -200,7 +293,7 @@ class ControlHandler():
         # 0 is top in the last generation
 
         s.configFile = 'snake.conf'
-        s.evSessFilePath = ''
+        s.sessFilePath = ''
         i = 2 
         while i < len(argv):
             if argv[i] == '-c':
@@ -210,16 +303,16 @@ class ControlHandler():
                 s.visAgentRank = int(argv[i]) - 1
             elif argv[i] == 'n':
                 s.visNewGame = True
-            elif s.evSessFilePath == '':
-                s.evSessFilePath = argv[i]
+            elif s.sessFilePath == '':
+                s.sessFilePath = argv[i]
             else:
                 raise Exception("Invalid arguments")
             i += 1
 
         s.configParams = s.getConfigParams()
         configParams = s.configParams
-        if s.evSessFilePath == '':
-            s.evSessFilePath = ('trained/agents_{}x{}' + \
+        if s.sessFilePath == '':
+            s.sessFilePath = ('trained/agents_{}x{}' + \
                     '_{}_{}_{}_{}_{}.dat').format(
                     configParams['m'],
                     configParams['n'],
@@ -236,7 +329,7 @@ class ControlHandler():
     def handleCPargs(s):
         argv = s.argv
         s.configFile = 'snake.conf'
-        s.evSessFilePath = ''
+        s.sessFilePath = ''
         i = 2 
         while i < len(argv):
             if argv[i] == '-c':
@@ -248,16 +341,16 @@ class ControlHandler():
                 newNumNewB = argv[i+2]
                 newNumGamesToAve = argv[i+3]
                 i += 3
-            elif s.evSessFilePath == '':
-                s.evSessFilePath = argv[i]
+            elif s.sessFilePath == '':
+                s.sessFilePath = argv[i]
             else:
                 raise Exception("Invalid arguments")
             i += 1
 
         s.configParams = s.getConfigParams()
         configParams = s.configParams
-        if s.evSessFilePath == '':
-            s.evSessFilePath = ('trained/agents_{}x{}' + \
+        if s.sessFilePath == '':
+            s.sessFilePath = ('trained/agents_{}x{}' + \
                     '_{}_{}_{}_{}_{}.dat').format(
                     configParams['m'],
                     configParams['n'],
@@ -266,10 +359,10 @@ class ControlHandler():
                     configParams['numNewB'],
                     configParams['numGamesToAve'],
                     configParams['NNString'])
-        return (s.evSessFilePath, newNumS, newNumTopP, newNumNewB, newNumGamesToAve)
+        return (s.sessFilePath, newNumS, newNumTopP, newNumNewB, newNumGamesToAve)
 
     def changeNumSnakesAndTopP(s, fileName, newNumS, newNumTopP, newNumNewB, newNumGamesToAve):
-        evSess = s.loadEvolutionSession(fileName)
+        evSess = s.loadSession(fileName)
         if newNumS != '-':
             evSess.numS = int(newNumS)
         if newNumTopP != '-': 
