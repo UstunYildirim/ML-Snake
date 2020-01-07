@@ -217,8 +217,10 @@ class ControlHandler():
 
     def printSSsessStats(s, ssSess):
         print ('\nTurn #{}'.format(ssSess.turnNo))
-        print ('Last performance is {}'.format(ssSess.stats['lastPerf']))
-        print ('So far the best performance is {}'.format(ssSess.stats['topPerf']))
+        print ('Last performance is {:.2f}, game over at turn #{}'.format(
+            ssSess.stats['lastPerf'],
+            ssSess.stats['lastNumTurn']))
+        print ('So far the best performance is {:.2f}'.format(ssSess.stats['topPerf']))
 
     def printEvSessStats(s, evSess):
         print ('\nGen #{}'.format(evSess.genNo))

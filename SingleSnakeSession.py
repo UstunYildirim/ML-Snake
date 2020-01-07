@@ -42,6 +42,7 @@ class SingleSnakeSession():
             s.stats['bestAgent'] = deepcopy(s.agent)
         if s.agent.game.dead or s.agent.game.won:
             s.stats['lastPerf'] = pE
+            s.stats['lastNumTurn'] = s.agent.game.numTurns
             return 1
         return 0
 
