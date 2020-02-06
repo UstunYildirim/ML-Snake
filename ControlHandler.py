@@ -51,13 +51,6 @@ class ControlHandler():
 
         s.configParams = s.getConfigParams()
         configParams = s.configParams
-        if s.sessType == '':
-            s.sessType = configParams['sessType']
-        if s.sessType not in [
-                ControlHandler.evolutionSess,
-                ControlHandler.singleSnakeSess
-                ]:
-            raise Exception('Session Type Error')
         if s.sessFilePath == '':
             if s.sessType == ControlHandler.evolutionSess:
                 s.sessFilePath = ('trained/agents_{}x{}' + \
@@ -126,6 +119,13 @@ class ControlHandler():
             elif a == 'session_type':
                 confParams['sessType'] = b
         f.close()
+        if s.sessType == '':
+            s.sessType = confParams['sessType']
+        if s.sessType not in [
+                ControlHandler.evolutionSess,
+                ControlHandler.singleSnakeSess
+                ]:
+            raise Exception('Session Type Error')
         return confParams
 
     def __parseNNStr__(s, txt):#FIXME: these may replace each other!
@@ -249,6 +249,7 @@ class ControlHandler():
     def contSession(s):
         s.sessType = ''
         s.handleSessArgs()
+        print('Session File Path: ' + s.sessFilePath)
         sess = s.loadSession(s.sessFilePath)
         if sess['type'] == ControlHandler.evolutionSess:
             s.contEvolutionSession(
@@ -273,20 +274,32 @@ class ControlHandler():
 
     def visualize(s):
         s.handleVisualizeArgs()
-        evSess = s.loadSession(s.sessFilePath)
-        raise Exception(
-                "Different possible sessions are not implemented!")
-        if s.visAgentRank == -1:
-            agentToVis = evSess.bestAgent
-        else:
-            agentToVis = evSess.agents[s.visAgentRank]
+        savedData = s.loadSession(s.sessFilePath)
+        if savedData['type'] == ControlHandler.evolutionSess:
+            evSess = savedData[ControlHandler.evolutionSess]
+            if s.visAgentRank == -1:
+                agentToVis = evSess.bestAgent
+            else:
+                agentToVis = evSess.agents[s.visAgentRank]
 
-        v = Visualize(agentToVis)
-        
-        if s.visNewGame:
-            print("Not implemented yet.")
+            v = Visualize(agentToVis)
+            
+            if s.visNewGame:
+                print("Not implemented yet.")
+            else:
+                v.playMovie()
+        elif savedData['type'] == ControlHandler.singleSnakeSess:
+            ssSess = savedData[ControlHandler.singleSnakeSess]
+            agentToVis = ssSess.agent
+
+            v = Visualize(agentToVis)
+            
+            if s.visNewGame:
+                print("Not implemented yet.")
+            else:
+                v.playMovie()
         else:
-            v.playMovie()
+            raise Exception("Unknown session type")
 
     def handleVisualizeArgs(s):
         argv = s.argv
@@ -297,6 +310,7 @@ class ControlHandler():
 
         s.configFile = 'snake.conf'
         s.sessFilePath = ''
+        s.sessType = ''
         i = 2 
         while i < len(argv):
             if argv[i] == '-c':
@@ -315,15 +329,22 @@ class ControlHandler():
         s.configParams = s.getConfigParams()
         configParams = s.configParams
         if s.sessFilePath == '':
-            s.sessFilePath = ('trained/agents_{}x{}' + \
-                    '_{}_{}_{}_{}_{}.dat').format(
-                    configParams['m'],
-                    configParams['n'],
-                    configParams['numS'],
-                    configParams['numTopP'],
-                    configParams['numNewB'],
-                    configParams['numGamesToAve'],
-                    configParams['NNString'])
+            if s.sessType == ControlHandler.evolutionSess:
+                s.sessFilePath = ('trained/agents_{}x{}' + \
+                        '_{}_{}_{}_{}_{}.dat').format(
+                        configParams['m'],
+                        configParams['n'],
+                        configParams['numS'],
+                        configParams['numTopP'],
+                        configParams['numNewB'],
+                        configParams['numGamesToAve'],
+                        configParams['NNString'])
+            elif s.sessType == ControlHandler.singleSnakeSess:
+                s.sessFilePath = ('trained/agents_{}x{}' + \
+                        '_{}.dat').format(
+                        configParams['m'],
+                        configParams['n'],
+                        configParams['NNString'])
 
     def changeParams(s):
         prms = s.handleCPargs()

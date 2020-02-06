@@ -10,6 +10,7 @@ class SinglePlayer():
         s.game = Game(m,n)
 
     def Play(s):
+        print("Control keys are vim-like. Press h, j, k, and l; and hit enter to go left, down, up, right respectively.")
         g = s.game
         vsr = Visualize(game=g)
         while True:

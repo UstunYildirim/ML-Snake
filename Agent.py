@@ -25,10 +25,10 @@ class Agent():
     # 
     def extractFeatures(s, game):
         res = s.normFoodCoords(game)-s.normHeadCoords(game)
-        res = np.concatenate((res, s.obstaclesNearHead(game, 4)))
+        res = np.concatenate((res, s.obstaclesNearHead(game, 2)))
         return res
     def featureLength(s):
-        return 42
+        return 14
 
     def __isObstacle__(s, game, pr, obstacleType = None):
         (i,j) = pr
@@ -102,7 +102,7 @@ class Agent():
         for layer in reversed(s.NNLayers):
             dA = layer.backwardPropogate(dA)
         for layer in s.NNLayers:
-            layer.updateParams(learningRate=0.0001,lambd=0.0001)
+            layer.updateParams(learningRate=0.00001,lambd=0.000001)
 
 
     def playSingleTurn(s):

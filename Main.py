@@ -6,7 +6,7 @@ man = """Example Usage:
 To try single player mode on a 7 by 10 board
     Main.py -SP 7 10
 
-To start new single snake learning session based on default config file:
+To start new single snake learning session (this mode is work in progress) based on default config file:
     Main.py -Nss
 
 To start new evolution session based on default config file:
